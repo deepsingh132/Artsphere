@@ -52,14 +52,16 @@ export default async function Event({}) {
   );
 }
 
-export async function getEvents(email) {
-  const res = await fetch(`http://localhost:3000/api/events${email ? `?email=${email}` : ""}`,
+async function getEvents(email: string | undefined) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/events${email ? `?email=${email}` : ""}`,
     {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    }
+  );
 
   const data = await res.json();
 
@@ -68,7 +70,7 @@ export async function getEvents(email) {
   };
 }
 
-export async function getWidgetsData() {
+async function getWidgetsData() {
 
   const trendingPosts = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/widgets/trending/posts`

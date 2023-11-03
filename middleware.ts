@@ -58,9 +58,7 @@ export async function middleware(request: Request) {
   //add local host and vercel url
   response.headers.append(
     "Access-Control-Allow-Origin",
-    "http://localhost:3000" ||
-      "https://nextjs-ecommerce-inky.vercel.app" ||
-      "http://192.168.0.113"
+    "http://localhost:3000" || `${process.env.NEXT_PUBLIC_FRONTEND_URL}`
   );
 
   // middleware for private routes

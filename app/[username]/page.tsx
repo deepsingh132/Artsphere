@@ -23,14 +23,14 @@ export default async function UserProfile({}) {
         trendingPosts={trendingPosts || []}
         randomUsersResults={randomUsersResults?.results || []}
       />
-      <CommentModal updatePosts={undefined} />
+      <CommentModal updatePosts={undefined} type={undefined} />
     </main>
   );
 }
 
 
 
-export async function getWidgetsData() {
+async function getWidgetsData() {
   const trendingPosts = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/widgets/trending/posts`
   ).then((res) => res.json());

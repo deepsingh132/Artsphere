@@ -21,13 +21,12 @@ export default async function Notifications({}) {
             randomUsersResults={randomUsersResults?.results || []}
           />
         </div>
-        <CommentModal />
       </div>
     </main>
   );
 }
 
-export async function getWidgetsData() {
+async function getWidgetsData() {
   const trendingPosts = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/widgets/trending/posts`
   ).then((res) => res.json());
