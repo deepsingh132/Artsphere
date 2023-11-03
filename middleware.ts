@@ -25,6 +25,10 @@ async function checkAuth(request: Request) {
   // add the user id to the request header
   response.headers.append("userId", payload?._id as string);
 
+  if (request.method === "GET" && !payload) {
+    return NextResponse.json({ message: "Not authorized" }, { status: 401 });
+  }
+
   if (request.method === "DELETE" && payload) {
       return response;
   }
@@ -65,7 +69,7 @@ export async function middleware(request: Request) {
   if (request.url.includes("/like")) {
     return checkAuth(request);
   }
-  if (request.url === "/events") {
+  if (request.url.includes("/events")) {
     return checkAuth(request);
   }
   if (

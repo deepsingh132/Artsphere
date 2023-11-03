@@ -27,13 +27,9 @@ export default async function Notifications({}) {
 }
 
 async function getWidgetsData() {
-  // Trending posts section
-  // TODO: add backend route for trending posts
-  const trendingPosts = null;
-
-  //   await fetch(
-  //   `${process.env.NEXT_PUBLIC_BACKEND_URL}/widgets/trending/posts`
-  // ).then((res) => res.json());
+  const trendingPosts = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/widgets/trending/posts`
+  ).then((res) => res.json());
 
   // Who to follow section
 
@@ -50,7 +46,7 @@ async function getWidgetsData() {
   }
 
   return {
-    trendingPosts: [],
+    trendingPosts: trendingPosts?.trendingPosts,
     randomUsersResults,
   };
 }

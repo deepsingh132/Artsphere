@@ -12,7 +12,7 @@ export default async function Event({}) {
 
   const { trendingPosts, randomUsersResults } = await getWidgetsData();
   const session = await getServerSession(authOptions);
-  const { events } = await getEvents(session?.user?.email);
+  const { events } = await getEvents(session);
 
 
   if (!session) {
@@ -52,34 +52,29 @@ export default async function Event({}) {
   );
 }
 
-async function getEvents(email: string | undefined) {
-  // TODO: add backend route for events
-  // const res =
-
-  //   await fetch(
-  //   `${process.env.NEXT_PUBLIC_BACKEND_URL}/events${email ? `?email=${email}` : ""}`,
-  //   {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //   }
-  // );
-
-  // const data = await res.json();
+async function getEvents(session : any) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/events?email=${session?.user?.email}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session?.user?.accessToken}`,
+      },
+    }
+  );
+  const data = await res.json();
 
   return {
-    events:  [],
+    events: data?.events || [],
   };
 }
 
 async function getWidgetsData() {
 
-  const trendingPosts = null;
-
-  //   await fetch(
-  //   `${process.env.NEXT_PUBLIC_BACKEND_URL}/widgets/trending/posts`
-  // ).then((res) => res.json());
+  const trendingPosts = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/widgets/trending/posts`
+  ).then((res) => res.json());
 
   // Who to follow section
 
@@ -96,7 +91,7 @@ async function getWidgetsData() {
   }
 
   return {
-    trendingPosts: [],
+    trendingPosts: trendingPosts?.trendingPosts,
     randomUsersResults,
   };
 }
