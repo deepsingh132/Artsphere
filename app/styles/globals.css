@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components{
+    .hoverEffect{
+        @apply cursor-pointer hover:bg-gray-200 dark:hover:bg-darkHover rounded-full min-w-[50px] min-h-[50px] p-3 transition duration-500 ease-out
+    }
+}
+
+:root{
+  --color: #9176ff;
+  --dark-color: #000000;
+  --dark-icon-color: #fff;
+  --light-color: #f7f7f7;
+  --light-icon-color: #ffde59;
+}
+
+body{
+    margin: 0;
+    background-color: #fff;
+    box-sizing: border-box;
+}
+
+body * {
+    @apply transition-colors duration-700;
+}
+
+[contenteditable][placeholder]:empty:before {
+  content: attr(placeholder);
+  position: absolute;
+  z-index: 9999;
+  color: gray;
+}
+

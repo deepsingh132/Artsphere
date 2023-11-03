@@ -1,0 +1,41 @@
+.toggle-container {
+  position: absolute;
+  /* add transition delay when toggling  */
+  transition-delay: 0.5s;
+}
+
+.toggle {
+  position: relative;
+  width: 60px;
+  height: 30px;
+  border-radius: 15px;
+  cursor: pointer;
+  background-color: #ffc107;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.7s ease-in-out;
+}
+
+/* create one class for toggled background color  */
+.toggle.dark {
+  background-color: var(--color);
+}
+
+.icon {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.5s ease-in-out;
+}
+
+.sun {
+  transform: translateX(0);
+  transition: all 0.5s ease-in-out;
+}
+
+.moon {
+  transform: translateX(30px);
+  transition: all 0.5s ease-in-out;
+}
