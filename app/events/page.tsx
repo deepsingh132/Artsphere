@@ -53,28 +53,33 @@ export default async function Event({}) {
 }
 
 async function getEvents(email: string | undefined) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/events${email ? `?email=${email}` : ""}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  // TODO: add backend route for events
+  // const res =
 
-  const data = await res.json();
+  //   await fetch(
+  //   `${process.env.NEXT_PUBLIC_BACKEND_URL}/events${email ? `?email=${email}` : ""}`,
+  //   {
+  //     method: "GET",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //   }
+  // );
+
+  // const data = await res.json();
 
   return {
-    events: data?.events || [],
+    events:  [],
   };
 }
 
 async function getWidgetsData() {
 
-  const trendingPosts = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/widgets/trending/posts`
-  ).then((res) => res.json());
+  const trendingPosts = null;
+
+  //   await fetch(
+  //   `${process.env.NEXT_PUBLIC_BACKEND_URL}/widgets/trending/posts`
+  // ).then((res) => res.json());
 
   // Who to follow section
 
@@ -91,7 +96,7 @@ async function getWidgetsData() {
   }
 
   return {
-    trendingPosts: trendingPosts?.trendingPosts,
+    trendingPosts: [],
     randomUsersResults,
   };
 }
