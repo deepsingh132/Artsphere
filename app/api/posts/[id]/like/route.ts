@@ -4,7 +4,7 @@ import User from "@/models/User";
 import { NextResponse } from "next/server";
 
 // Private route handle post update
-export async function PUT(request: { url: string; json: () => any; }) {
+export async function PUT(request: Request) {
   const postId = request.url.split("/")[5];
   const data = await request.json();
   const userId = data?.userId;
