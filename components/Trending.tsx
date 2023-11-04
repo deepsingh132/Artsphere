@@ -5,7 +5,7 @@ export default function Trending({ post }) {
   return (
     <a
       rel="noreferrer"
-      href={`${process.env.NEXT_PUBLIC_FRONTEND_URL + post?._id}`}
+      href={`${process.env.NEXT_PUBLIC_FRONTEND_URL + "/posts/" + post?._id}`}
       target="_self"
     >
       <div className="flex items-center justify-between px-4 py-2 space-x-1 hover:bg-gray-200 dark:hover:bg-darkHover transition duration-500 ease-out">
