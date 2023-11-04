@@ -32,7 +32,7 @@ export const authOptions: NextAuthOptions = {
             const newUser = await User.create({
               name: user.name,
               username: user.email?.split("@")[0] || user.name,
-              image: user.image,
+              image: user?.image || "",
               email: user.email,
             });
             token._id = newUser._id; // Include the MongoDB ObjectId in the token
