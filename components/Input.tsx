@@ -332,12 +332,12 @@ export default function Input({
               alt="user-img"
               width={40}
               height={40}
-              style={setCommentModalState ? { marginRight: "12px" } : {}}
+              style={setCommentModalState || phoneInputModal  ? { marginRight: "12px" } : {}}
               className="h-11 w-11 rounded-full cursor-pointer hover:brightness-95"
             />
             <div
               className={`${
-                setCommentModalState
+                setCommentModalState || phoneInputModal
                   ? "flex flex-1 flex-col max-h-[calc(90vw - 200px)] pr-3 sm:pr-0 !ml-0 focus-within:divide-y dark:divide-gray-500 divide-gray-200 max-w-[calc(80vw-80px)]"
                   : "flex flex-col w-full max-w-xl lg:max-w-[700px] md:max-w-screen ml-4 focus-within:divide-y dark:divide-gray-500 divide-gray-200 "
               }`}
@@ -348,7 +348,7 @@ export default function Input({
                 } divide-y divide-gray-200 `}
               >
                 <span
-                  className={`${setCommentModalState ? "sm:max-w-[400px] max-w-[calc(70vw)]" : "max-w-[550px]"}  flex-shrink sm:min-h-[24px] ${
+                  className={`${setCommentModalState || phoneInputModal ? "sm:max-w-[400px] max-w-[calc(70vw)]" : "max-w-[550px]"}  flex-shrink sm:min-h-[24px] ${
                     style
                       ? "max-h-[70vh]"
                       : "max-h-[720px]"

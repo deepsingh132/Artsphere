@@ -133,7 +133,9 @@ export default function Feed({ type }) {
           text={undefined}
           id={undefined}
           style={undefined}
-          phoneInputModal={undefined} setCommentModalState={undefined}        />
+          phoneInputModal={undefined}
+          setCommentModalState={undefined}
+        />
 
         {session && (
           // an absolute floating button to create a post on mobile
@@ -145,24 +147,23 @@ export default function Feed({ type }) {
               className="flex self-center bg-primary rounded-full h-[56px] w-[56px] hover:brightness-90 hover:shadow-md transition-all duration-300 ease-in-out outline-none items-center justify-center"
             >
               <span className="flex items-center font-black">
-                <PencilSquareIcon className="h-6 w-6 text-white" />
+                <PencilSquareIcon className="h-6 w-6 text-text" />
               </span>
             </button>
           </div>
         )}
 
-        {
-          loading && status !== "loading" ? (
-            <div className="flex pt-4">
+        {loading && status !== "loading" ? (
+          <div className="flex pt-4">
+            <Spinner />
+          </div>
+        ) : (
+          status === "loading" && (
+            <>
               <Spinner />
-            </div>
-          ) : ( status === "loading" && (
-              <>
-                <Spinner />
-              </>
-            )
+            </>
           )
-          }
+        )}
 
         <AnimatePresence>
           {posts
@@ -197,16 +198,20 @@ export default function Feed({ type }) {
 
         {modalOpen && (
           <Modal closeModal={closeModal}>
-            <div className="flex sm:hidden flex-col min-w-fit p-4 min-h-fit items-center w-full h-full">
-              <h1 className="text-2xl font-bold text-gray-700 dark:text-darkText">
+            <div className="max-w-full p-3">
+              <h1 className="text-2xl font-bold text-text dark:text-darkText">
                 Create a post
               </h1>
+              <div className="flex-1 ">
               <Input
                 updatePosts={updatePosts}
-                style={`w-full mt-4 flex h-full`}
+                style={`flex w-full mt-4 min-h-[50px] max-h-[100px] text-[15px] dark:bg-darkBg dark:text-darkText`}
                 phoneInputModal={closeModal}
                 text={undefined}
-                id={undefined} setCommentModalState={undefined}              />
+                id={undefined}
+                setCommentModalState={undefined}
+              />
+              </div>
             </div>
           </Modal>
         )}
