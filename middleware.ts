@@ -22,7 +22,7 @@ async function checkAuth(request: Request) {
   const token = bearer.split(" ")[1];
   const payload = await decodeJWT(token);
 
-  // add the user id to the request header
+  // add the decoded user id to the request header
   response.headers.append("userId", payload?._id as string);
 
   if (request.method === "GET" && !payload) {
@@ -50,6 +50,7 @@ async function checkAuth(request: Request) {
       return NextResponse.json({ message: "Not authorized" }, { status: 401 });
     }
   }
+  return response; // return the response object with the headers
 }
 
 export async function middleware(request: Request) {

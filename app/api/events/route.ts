@@ -7,10 +7,11 @@ import User from "@/models/User";
 // Get all events
 export async function GET(request: Request) {
   await connectMongoDB();
-  const email = request.url.split("=")[1];
+  const userId = request.headers.get("userId");
 
-  // Find the user based on the provided email
-  const user = await User.findOne({ email: email });
+  // Find the user based on the userId in the header
+  const user = await User.findOne({ _id: userId });
+
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 404 });

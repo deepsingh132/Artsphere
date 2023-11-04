@@ -2,7 +2,6 @@ import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
 import Widgets from "@/components/Widgets";
 import CreateEventLayout from "@/components/createEventLayout";
-import axios from "axios";
 import EventsLayout from "@/components/EventsLayout";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -54,7 +53,7 @@ export default async function Event({}) {
 
 async function getEvents(session : any) {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/events?email=${session?.user?.email}`,
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/events`,
     {
       method: "GET",
       headers: {
