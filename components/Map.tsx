@@ -13,12 +13,11 @@ import usePlacesAutocomplete, {
 
 import { AutoComplete } from "primereact/autocomplete";
 import "./maps.css";
-import { Button } from "primereact/button";
 import { MapPinIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import moment from "moment";
 
-export default function GoogleMapsLoader({ currentEvent, user, email }) {
+export default function GoogleMapsLoader({ currentEvent, accessToken}) {
 
   const [libraries] = useState(["places"]) as any;
 
@@ -29,12 +28,12 @@ export default function GoogleMapsLoader({ currentEvent, user, email }) {
 
   if (!isLoaded) return <Spinner />;
 
-  return <Map isLoaded={isLoaded} currentEvent={currentEvent} email={email} />;
+  return <Map isLoaded={isLoaded} currentEvent={currentEvent} accessToken={accessToken}/>;
 }
-function Map({ isLoaded, currentEvent, email }) {
+function Map({ isLoaded, currentEvent, accessToken}) {
   const [selected, setSelected] = useState(null);
   const [center, setCenter] = useState({ lat: currentEvent?.lat, lng: currentEvent?.lng });
-  const onLoad = useCallback((map: any) => { addMarkers(map, currentEvent,email);}, [currentEvent, email]);
+  const onLoad = useCallback((map: any) => { addMarkers(map, currentEvent,accessToken);}, [accessToken, currentEvent]);
 
   useMemo(() => {
     if (selected) {
@@ -78,9 +77,16 @@ function Map({ isLoaded, currentEvent, email }) {
   );
 }
 
-const addMarkers = async (map: object | null | undefined,currentEvent: { lat: any; }, email: any) => {
+const addMarkers = async (map: object | null | undefined,currentEvent: { lat: any; },accessToken: string) => {
   const { data } = await axios.get(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/events?email=${email}`
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/events`,
+    // add accessToken to headers
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${accessToken}`,
+      },
+    }
   );
   const events = data?.events || [];
   events.forEach((event: { coordinates: { lat: any; lng: any; }; title: any; description: any; location: any; date: moment.MomentInput; image: any; link: any; }) => {

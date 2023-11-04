@@ -73,7 +73,7 @@ export default function EventCard({ event, user, email }) {
         </div>
       </div>
       {modalOpen && (
-        <MapModal event={event} closeModal={closeModal} user={user} email={email} />
+        <MapModal event={event} closeModal={closeModal} user={user} />
       )}
     </div>
   );

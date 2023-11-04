@@ -98,7 +98,7 @@ export default function CreateEventBtn() {
       )}
       {isVerified && isOrganizer && (
         <button
-          className="bg-primary hover:brightness-90 mx-2 text-white h-fit w-fit font-bold p-2 rounded-full"
+          className="bg-primary hover:brightness-90 mx-2 text-text h-fit w-fit font-bold p-2 rounded-full"
           onClick={() => setEventModalOpen(true)}
         >
           Create Event
