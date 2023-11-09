@@ -1,10 +1,11 @@
-# ArtSphere - Unleash Your Creative Expression
+# ArtSphere ![GitHub deployments](https://img.shields.io/github/deployments/deepsingh132/artsphere/production?label=build)
+
 
 Welcome to ArtSphere 🖼️, a vibrant and innovative social media web app dedicated to the artistic souls of the world. Just like a painter's canvas, the platform provides a blank space for actors, musicians, writers, and visual artists to express themselves and connect with a global community that shares their passion for art and culture, developed with Next.js 13 🔼 and tailwind 🌬️.
 
 ## Project Overview
 
-ArtSphere aims to bridge gaps in art and culture, creating an inclusive virtual sphere where creativity knows no bounds. We're more than just a Twitter replica; we're a creative hub where you can showcase your talents, collaborate with like-minded artists, and explore the endless possibilities of artistic expression.
+ArtSphere aims to bridge gaps in art and culture, creating an inclusive virtual sphere where creativity knows no bounds. It's more than just a Twitter replica; it's a creative hub where you can showcase your talents, collaborate with like-minded artists, and explore the endless possibilities of artistic expression.
 
 ## Table of Contents 📜
 
@@ -38,7 +39,14 @@ ArtSphere offers a plethora of features designed to inspire and empower artists:
 
 ## Getting Started 🚀
 
-First, run the development server:
+First, install all the required packages by running:
+```bash
+npm install
+# or
+yarn install
+```
+
+then, run the development server:
 
 ```bash
 npm run dev
