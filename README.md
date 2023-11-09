@@ -54,6 +54,128 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 The `app/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
+<br>
+
+## Screenshots
+
+<br>
+
+<table>
+  <thead>
+    <tr>
+      <th>Desktop</th>
+      <th>Mobile/Responsive</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <img
+          src="./screenshots/home.png" alt="desktop-home"
+          height="200"
+        />
+      </td>
+      <td>
+        <img
+          src="./screenshots/mobile/home.png"
+          alt="mobile-home"
+          width="200"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <img
+          src="./screenshots/events.png"
+          alt="events"
+          height="200"
+        />
+      </td>
+      <td>
+        <img
+          src="./screenshots/mobile/events.png"
+          alt="mobile-events"
+          width="200"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <img
+          src="./screenshots/event-detail.png"
+          alt="desktop-search1"
+          height="400"
+        />
+      </td>
+      <td>
+        <img
+          src="./screenshots/mobile/event-detail.png"
+          alt="mobile-search"
+          width="200"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <img
+          src="./screenshots/singlepost.png"
+          alt="desktop-search1"
+          width="400"
+        />
+      </td>
+      <td>
+        <img
+          src="./screenshots/mobile/singlepost.png"
+          width="200"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <img
+          src="./screenshots/commentmodal.png"
+          height="200"
+        />
+      </td>
+      <td>
+        <img
+          src="./screenshots/mobile/commentmodal.png"
+          width="200"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <img
+          src="./screenshots/notifications.png"
+          height="200"
+        />
+      </td>
+      <td>
+        <img
+          src="./screenshots/mobile/settings-mobile.png"
+          width="200"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <img
+          src="./screenshots/home-dark.png"
+          height="200"
+          width="400"
+        />
+      </td>
+      <td>
+        <img
+          src="./screenshots/mobile/navbar.png"
+          width="200"
+        />
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 ## Contributing 🤝
 
 We welcome contributors who want to make ArtSphere an even better platform for artists. Feel free to fork the repository and submit pull requests to enhance the app.
