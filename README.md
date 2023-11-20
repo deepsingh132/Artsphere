@@ -77,7 +77,7 @@ The `app/api` directory is mapped to `/api/*`. Files in this directory are treat
   </thead>
   <tbody>
     <tr>
-      <td>
+      <td align="center">
         <img
           src="./screenshots/home.png" alt="desktop-home"
           height="200"
@@ -92,7 +92,7 @@ The `app/api` directory is mapped to `/api/*`. Files in this directory are treat
       </td>
     </tr>
     <tr>
-      <td>
+      <td align="center">
         <img
           src="./screenshots/events.png"
           alt="events"
@@ -108,7 +108,7 @@ The `app/api` directory is mapped to `/api/*`. Files in this directory are treat
       </td>
     </tr>
     <tr>
-      <td>
+      <td align="center">
         <img
           src="./screenshots/event-detail.png"
           alt="desktop-search1"
@@ -124,7 +124,7 @@ The `app/api` directory is mapped to `/api/*`. Files in this directory are treat
       </td>
     </tr>
     <tr>
-      <td>
+      <td align="center">
         <img
           src="./screenshots/singlepost.png"
           alt="desktop-search1"
@@ -139,7 +139,7 @@ The `app/api` directory is mapped to `/api/*`. Files in this directory are treat
       </td>
     </tr>
     <tr>
-      <td>
+      <td align="center">
         <img
           src="./screenshots/commentmodal.png"
           height="200"
@@ -153,7 +153,7 @@ The `app/api` directory is mapped to `/api/*`. Files in this directory are treat
       </td>
     </tr>
     <tr>
-      <td>
+      <td align="center">
         <img
           src="./screenshots/notifications.png"
           height="200"
@@ -167,7 +167,7 @@ The `app/api` directory is mapped to `/api/*`. Files in this directory are treat
       </td>
     </tr>
     <tr>
-      <td>
+      <td align="center">
         <img
           src="./screenshots/home-dark.png"
           height="200"
