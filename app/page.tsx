@@ -30,6 +30,14 @@ export default async function Home() {
 }
 
 async function getWidgetsData() {
+
+  if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
+    return {
+      trendingPosts: [],
+      randomUsersResults: [],
+    };
+  }
+
   // Trending posts section
   // TODO: add backend route for trending posts
   const trendingPosts =

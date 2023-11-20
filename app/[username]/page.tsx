@@ -31,6 +31,14 @@ export default async function UserProfile({}) {
 
 
 async function getWidgetsData() {
+
+  if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
+    return {
+      trendingPosts: [],
+      randomUsersResults: [],
+    };
+  }
+
   const trendingPosts = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/widgets/trending/posts`
   ).then((res) => res.json());

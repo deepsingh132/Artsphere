@@ -51,7 +51,14 @@ export default async function Event({}) {
   );
 }
 
-async function getEvents(session : any) {
+async function getEvents(session: any) {
+
+  if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
+    return {
+      events: [],
+    };
+  }
+
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/events`,
     {
@@ -70,6 +77,13 @@ async function getEvents(session : any) {
 }
 
 async function getWidgetsData() {
+
+  if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
+    return {
+      trendingPosts: [],
+      randomUsersResults: [],
+    };
+  }
 
   const trendingPosts = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/widgets/trending/posts`
