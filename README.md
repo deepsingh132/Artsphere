@@ -1,4 +1,4 @@
-# ArtSphere ![GitHub deployments](https://img.shields.io/github/deployments/deepsingh132/artsphere/production?label=build)
+# ArtSphere ![GitHub deployments](https://img.shields.io/github/deployments/deepsingh132/artsphere/production?label=build) [![Node.js CI](https://github.com/deepsingh132/Artsphere/actions/workflows/node.js.yml/badge.svg)](https://github.com/deepsingh132/Artsphere/actions/workflows/node.js.yml)
 
 
 Welcome to ArtSphere 🖼️, a vibrant and innovative social media web app dedicated to the artistic souls of the world. Just like a painter's canvas, the platform provides a blank space for actors, musicians, writers, and visual artists to express themselves and connect with a global community that shares their passion for art and culture, developed with Next.js 13 🔼 and tailwind 🌬️.
