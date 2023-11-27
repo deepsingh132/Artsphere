@@ -1,7 +1,7 @@
 import "./styles/globals.css";
 import React from "react";
 import { NextAuthProvider } from './Providers';
-import RecoidContextProvider from "./RecoilContextProviders";
+import RecoilContextProvider from "./RecoilContextProviders";
 import { Metadata } from "next";
 
 export const metadata : Metadata = {
@@ -16,10 +16,26 @@ export default function RootLayout({
   }) {
   return (
     <html suppressHydrationWarning={true} lang="en">
+      <head>
+        {/* <Toggle /> */}
+        <script
+          dangerouslySetInnerHTML=
+          {{
+            __html: `
+        try {
+          if (localStorage.mode === 'dark' || (!('mode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+          } else {
+            document.documentElement.classList.remove('dark')
+          }
+        } catch (_) {}
+      `,
+          }}/>
+      </head>
       <body suppressHydrationWarning={true}>
-        <RecoidContextProvider>
+        <RecoilContextProvider>
           <NextAuthProvider>{children}</NextAuthProvider>
-        </RecoidContextProvider>
+        </RecoilContextProvider>
       </body>
     </html>
   );
