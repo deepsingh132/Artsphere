@@ -1,69 +1,85 @@
 'use client';
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./toggle_mode.css";
 import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 import { toastSuccess } from "./Toast";
+import { useTheme } from "next-themes";
 
 export default function ModeToggle() {
 
-  const initialMode = localStorage.getItem("mode") || "light";
-  const [mode, setMode] = useState(initialMode);
+  const { setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    if (mode === "dark") {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("mode", "dark");
+    // set the toggle state based on the resolved theme
+    if (resolvedTheme === "dark") {
+      document?.getElementById("darkModeToggle")?.classList.add("dark");
       document?.getElementById("icon")?.classList.toggle("moon");
     } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("mode", "light");
+      document?.getElementById("darkModeToggle")?.classList.remove("dark");
+      document?.getElementById("icon")?.classList.toggle("sun");
     }
-  }, [mode, initialMode]);
 
+  }, [resolvedTheme]);
 
   const toggleMode = () => {
-    if (mode === "dark") {
-      localStorage.setItem("mode", "light");
-      setMode("light");
-      document?.getElementById("icon")?.classList.toggle("moon");
-      toastSuccess("Light mode enabled", {
+    if (!mounted) return;
+
+    const toggleClasses = (id: string, newClass: string, oldClass: string) => {
+      const element = document?.getElementById(id);
+      console.log("Element to switch: ", element);
+      console.log("Element to remove: ", oldClass);
+      console.log("Element to add: ", newClass);
+
+      element?.classList.remove(oldClass);
+      element?.classList.add(newClass);
+    };
+
+    const showToast = (message: string, color: string) => {
+      toastSuccess(message, {
         style: {
-          background: "#fff",
-          color: "#333",
+          background: color,
+          color: color === "#fff" ? "#333" : "#fff",
           zIndex: 1,
           boxShadow: "0 1px 4px rgba(0, 0, 0, 0.1)",
         },
         duration: 3000,
       });
+    };
+    if (resolvedTheme === "dark") {
+      setTheme("light");
+      toggleClasses("icon", "sun", "moon");
+      document?.getElementById("darkModeToggle")?.classList.remove("dark");
+      showToast("Light mode enabled", "#fff");
     } else {
-      localStorage.setItem("mode", "dark");
-      setMode("dark");
-      toastSuccess("Dark mode enabled", {
-        style: {
-          background: "#333",
-          color: "#fff",
-          zIndex: 1,
-          boxShadow: "0 1px 4px rgba(0, 0, 0, 0.1)",
-        },
-      }
-      );
+      setTheme("dark");
+      toggleClasses("icon", "sun", "sun");
+      document?.getElementById("darkModeToggle")?.classList.add("dark");
+      showToast("Dark mode enabled", "#333");
     }
-  };
+  }
 
   return (
     <div className="flex items-center justify-center">
       <div className="toggle-container">
         <div
-          className={mode === "dark" ? "toggle dark" : "toggle"}
+          data-testid="dark-mode-toggle"
+          className={
+            resolvedTheme === "dark"
+              ? "toggle dark"
+              : "toggle"
+          }
           onClick={toggleMode}
           id="darkModeToggle"
         >
           <div className="icon sun" id="icon">
-            {mode === "dark" ? (
-              <MoonIcon className="text-black" id="moon" />
-            ) : (
-              <SunIcon className="text-black" id="sun" />
-            )
+            {
+              resolvedTheme === "dark" ? (
+                <MoonIcon className="text-black" id="sun" />
+              ) : (
+                <SunIcon className="text-black" id="moony" />
+              )
             }
           </div>
         </div>
@@ -71,17 +87,3 @@ export default function ModeToggle() {
     </div>
   );
 }
-          // {
-          //   // if mode is dark then show moon else show sun
-          //   mode === "dark" ? (
-          //     <MoonIcon
-          //       className="icon moon transition-transform duration-500"
-          //       id="moon"
-          //     />
-          //   ) : (
-          //     <SunIcon
-          //       className="icon sun transition-transform duration-500"
-          //       id="sun"
-          //     />
-          //   );
-          // }
