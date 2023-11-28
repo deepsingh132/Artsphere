@@ -28,10 +28,6 @@ export default function ModeToggle() {
 
     const toggleClasses = (id: string, newClass: string, oldClass: string) => {
       const element = document?.getElementById(id);
-      console.log("Element to switch: ", element);
-      console.log("Element to remove: ", oldClass);
-      console.log("Element to add: ", newClass);
-
       element?.classList.remove(oldClass);
       element?.classList.add(newClass);
     };
