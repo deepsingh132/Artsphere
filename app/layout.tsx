@@ -3,7 +3,7 @@ import React from "react";
 import { NextAuthProvider } from "./Providers";
 import RecoilContextProvider from "./RecoilContextProviders";
 import { Metadata } from "next";
-import { Provider } from "./ThemeProvider";
+import { ThemeProvider } from "./ThemeProvider";
 
 export const metadata: Metadata = {
   title: "Artsphere",
@@ -21,11 +21,11 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning={true} lang="en">
       <body suppressHydrationWarning={true}>
-        <Provider>
+        <ThemeProvider attribute="class">
           <RecoilContextProvider>
             <NextAuthProvider>{children}</NextAuthProvider>
           </RecoilContextProvider>
-        </Provider>
+        </ThemeProvider>
       </body>
     </html>
   );
