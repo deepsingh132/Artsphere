@@ -16,14 +16,26 @@
   --light-icon-color: #ffde59;
 }
 
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
 body{
     margin: 0;
     background-color: #fff;
     box-sizing: border-box;
 }
 
-body * {
-    @apply transition-colors duration-700;
+[data-theme="dark"]{
+    --color: #9176ff;
+    --dark-color: #000000;
+    --dark-icon-color: #fff;
+    --light-color: #f7f7f7;
+    --light-icon-color: #ffde59;
+    background-color: #000;
 }
 
 [contenteditable][placeholder]:empty:before {

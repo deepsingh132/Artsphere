@@ -99,16 +99,18 @@ export default function Feed({ type }) {
     }
   };
 
-  if (!loading && posts.length === 0) {
+  if (!loading && posts?.length === 0) {
     return (
-      <div className="xl:ml-[350px] h-full border-l border-r border-lightBorderColor dark:border-darkBorderColor  xl:min-w-[680px] sm:ml-[82px] justify-center sm:w-[calc(100%-83px)] w-full content-center items-center flex-grow max-w-2xl">
+      <div className="xl:ml-[350px] h-full border-l border-r border-lightBorderColor dark:border-darkBorderColor  xl:min-w-[680px] sm:ml-[82px] justify-center sm:w-[calc(100%-82px)] w-screen content-center items-center flex-grow max-w-2xl">
         <Navbar title={undefined} />
         <Input
           updatePosts={updatePosts}
           text={undefined}
           id={undefined}
           style={undefined}
-          phoneInputModal={undefined} setCommentModalState={undefined}        />
+          phoneInputModal={undefined}
+          setCommentModalState={undefined}
+        />
         <div className="flex flex-col items-center justify-center h-[calc(100%-50%)]">
           <h1 className="text-2xl font-bold text-gray-700 dark:text-darkText">
             No posts found
@@ -203,14 +205,14 @@ export default function Feed({ type }) {
                 Create a post
               </h1>
               <div className="flex-1 ">
-              <Input
-                updatePosts={updatePosts}
-                style={`flex w-full mt-4 min-h-[50px] max-h-[100px] text-[15px] dark:bg-darkBg dark:text-darkText`}
-                phoneInputModal={closeModal}
-                text={undefined}
-                id={undefined}
-                setCommentModalState={undefined}
-              />
+                <Input
+                  updatePosts={updatePosts}
+                  style={`flex w-full mt-4 min-h-[50px] max-h-[100px] text-[15px] dark:bg-darkBg dark:text-darkText`}
+                  phoneInputModal={closeModal}
+                  text={undefined}
+                  id={undefined}
+                  setCommentModalState={undefined}
+                />
               </div>
             </div>
           </Modal>
