@@ -6,8 +6,7 @@ import { NextResponse } from "next/server";
 // Private route handle post update
 export async function PUT(request: Request) {
   const postId = request.url.split("/")[5];
-  const data = await request.json();
-  const userId = data?.userId;
+  const userId = request.headers.get("userId");
 
   if (!postId || !userId) {
     return NextResponse.json({ message: "Invalid data" }, { status: 400 });

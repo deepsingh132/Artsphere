@@ -39,7 +39,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ trendingPosts }, { status: 200 });
   } catch (error) {
     console.error("Error fetching popular posts:", error);
-    return NextResponse.json({ error: "Failed to fetch popular posts" }, { status: 500 });
+    return new NextResponse("Error!", { status: 500 });
   }
 }
 

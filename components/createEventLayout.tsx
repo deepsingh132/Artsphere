@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import EventForm from "./EventForm";
 import { toastError, toastSuccess } from "./Toast";
+import { backendUrl } from "@/app/utils/config/backendUrl";
 
 export default function CreateEventBtn() {
   const { status, data: session } = useSession();
@@ -27,7 +28,7 @@ export default function CreateEventBtn() {
     const checkVerified = async () => {
       try {
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${username}`
+          `${backendUrl}/user/${username}`
         );
         if (res.status === 200) {
           if (res.data.user.verified) {
@@ -60,7 +61,7 @@ export default function CreateEventBtn() {
 
     try {
       const res = await axios.put(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${username}`,
+        `${backendUrl}/user/${username}`,
         {
           organizer: true,
         },

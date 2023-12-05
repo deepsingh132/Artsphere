@@ -20,7 +20,7 @@ import { useRecoilState } from "recoil";
 import { modalState, postIdState } from "@/app/atom/modalAtom";
 import YoutubeEmbed from "./YoutubeEmbed";
 import { toastError, toastSuccess } from "./Toast";
-
+import { deletePost, likePost } from "@/app/utils/postUtils";
 
 export default function Post({ post, id, updatePosts }) {
   const [hasLiked, setHasLiked] = useState(false);
@@ -41,7 +41,6 @@ export default function Post({ post, id, updatePosts }) {
     }
   }, [status, session]);
 
-
   // check if post's likes array contains the logged in user's id
   useEffect(() => {
     // set the likes state
@@ -50,7 +49,7 @@ export default function Post({ post, id, updatePosts }) {
     }
   }, [post, session?.user?.id]);
 
-  async function likePost() {
+  async function likePostFunc() {
     if (currentUser) {
       setHasLiked(!hasLiked); //optimistic update
       if (!hasLiked) {
@@ -62,23 +61,16 @@ export default function Post({ post, id, updatePosts }) {
           post?.likes?.splice(index, 1);
         }
       }
-      const config = {
-        headers: {
-          Authorization: `Bearer ${session?.user?.accessToken}`,
-        },
-      };
-      const res = await axios.put(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/posts/${id}/like`,
-        {
-          userId: session?.user?.id,
-          token: session?.user?.accessToken,
-        },
-        config
-      );
+      const res = await likePost(id, session?.user?.id ,session?.user?.accessToken);
 
       //rollback optimistic update if error
-      if (res.status !== 200) {
+      if (!res) {
+        toastError("Error liking post", undefined);
         setHasLiked(hasLiked);
+        const index = post?.likes?.indexOf(session?.user?.id);
+        if (index > -1) {
+          post?.likes?.splice(index, 1);
+        }
       }
     } else {
       // signIn();
@@ -86,30 +78,26 @@ export default function Post({ post, id, updatePosts }) {
     }
   }
 
-  async function deletePost() {
+  async function deletePostFunc() {
     if (window.confirm("Are you sure you want to delete this post?")) {
       updatePosts("delete", null, id); // optimistic update
-      try {
-        const res = await axios.delete(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/posts/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${session?.user?.accessToken}`,
-            },
-          }
-        );
-        toastSuccess("Post deleted", undefined);
-      } catch (error) {
+      const res = await deletePost(id, session?.user?.accessToken);
+
+      //rollback optimistic update if error
+      if (!res) {
         toastError("Error deleting post", undefined);
+        updatePosts("add", post, id);
+      } else {
+        toastSuccess("Post deleted", undefined);
       }
     }
   }
 
   return (
     <div
-      className={`flex ${
-        status === "loading" ? "animate-pulse" : ""
-      } hover:bg-gray-50 dark:hover:bg-darkHover md:w-full sm:p-3 p-2 truncate cursor-pointer first:pt-4 border-b border-lightBorderColor dark:border-darkBorderColor`}
+      data-testid="post"
+      role="post"
+      className={`flex hover:bg-gray-50 dark:hover:bg-darkHover md:w-full sm:p-3 p-2 truncate cursor-pointer first:pt-4 border-b border-lightBorderColor dark:border-darkBorderColor`}
     >
       {/* user image */}
       <Image
@@ -156,34 +144,32 @@ export default function Post({ post, id, updatePosts }) {
         {/* post text */}
 
         <div onClick={() => router.push(`/posts/${id}`)}>
+          <p
+            onClick={() => router.push(`/posts/${id}`)}
+            className="text-gray-800 dark:text-darkText whitespace-normal text-[15px] sm:mr-2 sm:text-[16px] mb-2"
+          >
+            {post?.content}
+          </p>
 
-        <p
-          onClick={() => router.push(`/posts/${id}`)}
-          className="text-gray-800 dark:text-darkText whitespace-normal text-[15px] sm:mr-2 sm:text-[16px] mb-2"
-        >
-          {post?.content}
-        </p>
+          {/* post media */}
 
-        {/* post media */}
+          {
+            // check if post?.url exists
+            post?.url && !post?.url?.includes("youtube") && (
+              <Image
+                onClick={() => router.push(`/posts/${id}`)}
+                className="rounded-2xl max-h-80 w-[100%] sm:w-full object-cover"
+                width={500}
+                height={500}
+                src={post?.url}
+                alt="img"
+              />
+            )
+          }
 
-        {
-          // check if post?.url exists
-          post?.url && !post?.url?.includes("youtube") && (
-            <Image
-              onClick={() => router.push(`/posts/${id}`)}
-              className="rounded-2xl max-h-80 w-[100%] sm:w-full object-cover"
-              width={500}
-              height={500}
-              src={post?.url}
-              alt="img"
-            />
-          )
-        }
-
-        {post?.url && post?.url?.includes("youtube") && (
-          <YoutubeEmbed embedId={post?.url?.split("v=")[1]} />
+          {post?.url && post?.url?.includes("youtube") && (
+            <YoutubeEmbed embedId={post?.url?.split("v=")[1]} />
           )}
-
         </div>
 
         {/* icons */}
@@ -208,19 +194,20 @@ export default function Post({ post, id, updatePosts }) {
           </div>
           {userId === post?.authorID && (
             <TrashIcon
-              onClick={deletePost}
+              data-testid="delete-post-button"
+              onClick={deletePostFunc}
               className="h-9 w-9 hoverEffect !min-h-0 !min-w-0 p-2 hover:text-red-600 hover:bg-red-100"
             />
           )}
           <div className="flex items-center">
             {hasLiked ? (
               <HeartIconFilled
-                onClick={likePost}
+                onClick={likePostFunc}
                 className="h-9 w-9 hoverEffect !min-h-0 !min-w-0 p-2 text-red-600 hover:bg-red-100"
               />
             ) : (
               <HeartIcon
-                onClick={likePost}
+                onClick={likePostFunc}
                 className="h-9 w-9 hoverEffect !min-h-0 !min-w-0 p-2 hover:text-red-600 hover:bg-red-100"
               />
             )}

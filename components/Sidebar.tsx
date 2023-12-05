@@ -23,7 +23,7 @@ export default function Sidebar({}) {
   }, [session?.user, status]);
 
   return (
-    <div className="hidden bg-white dark:bg-darkBg z-40 sm:flex sm:self-start overflow-y-auto flex-col p-2 xl:items-start fixed h-full xl:ml-20">
+    <div className="hidden z-40 sm:flex sm:self-start overflow-y-auto flex-col p-2 xl:items-start fixed h-full xl:ml-20">
       <div
         onClick={() => router.push("/")}
         className="hoverEffect flex justify-center content-center align-middle p-2 hover:bg-orange-100 xl:px-2"
@@ -55,15 +55,20 @@ export default function Sidebar({}) {
       {currentUser ? (
         <>
           <button
-            onClick={() => setIsOpen(true)}
+            onClick={() =>
+              setIsOpen(true)
+            }
             className="bg-primary text-text  rounded-full w-56 h-12 font-bold shadow-md hover:brightness-95 text-lg hidden xl:inline">
             Express
           </button>
-          <div className="hoverEffect text-gray-700 flex items-center justify-center xl:justify-start my-auto">
+          <div
+            data-testid="user-info"
+            className="hoverEffect text-gray-700 flex items-center justify-center xl:justify-start my-auto">
             <Image
               width="50"
               height="50"
               src={currentUser?.image}
+
               alt="user-img"
               className="h-10 w-10 rounded-full xl:mr-2"
             />

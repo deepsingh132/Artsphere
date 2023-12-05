@@ -16,6 +16,7 @@ import "./maps.css";
 import { MapPinIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import moment from "moment";
+import { backendUrl } from "@/app/utils/config/backendUrl";
 
 export default function GoogleMapsLoader({ currentEvent, accessToken}) {
 
@@ -79,7 +80,7 @@ function Map({ isLoaded, currentEvent, accessToken}) {
 
 const addMarkers = async (map: object | null | undefined,currentEvent: { lat: any; },accessToken: string) => {
   const { data } = await axios.get(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/events`,
+    `${backendUrl}/events`,
     // add accessToken to headers
     {
       headers: {

@@ -2,7 +2,12 @@ import toast from "react-hot-toast";
 
 let theme = "light";
 if (typeof window !== "undefined") {
-  theme = localStorage.getItem("mode") || "light";
+  // get system preference
+  const systemPreference = window.matchMedia("(prefers-color-scheme: dark)")
+    .matches
+    ? "dark"
+    : "light";
+  theme = localStorage.getItem("theme") || systemPreference;
 }
 
   // toast config

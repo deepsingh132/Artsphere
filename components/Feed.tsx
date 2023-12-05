@@ -5,21 +5,39 @@ import { Key, useEffect, useState } from "react";
 import Input from "./Input";
 import Post from "./Post";
 import Navbar from "./Navbar";
-import axios from "axios";
 import { useSession } from "next-auth/react";
 import Spinner from "./Spinner";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { Modal } from "./modal";
 import CommentModal from "./CommentModal";
-import { toastSuccess, toastError } from "./Toast";
+import { toastError } from "./Toast";
 import PostModal from "./PostModal";
+import useSWR from "swr";
+import { backendUrl } from "@/app/utils/config/backendUrl";
+
 
 export default function Feed({ type }) {
-  const [posts, setPosts] = useState([]) as any;
-  const [loading, setLoading] = useState(true);
+  // fetcher function for useSWR
+  const fetcher = (url: RequestInfo | URL) =>
+    fetch(url).then((res) => {
+      if (!res.ok) {
+        toastError("Error loading posts", undefined);
+      }
+      return res.json();
+    });
+
+  const key = type ? `${backendUrl}/posts?type=${type}` : `${backendUrl}/posts`;
+  const { data, error, isLoading, mutate } = useSWR(key, fetcher, {
+    // refreshInterval: 30000,
+    revalidateOnFocus: true,
+    revalidateOnReconnect: true,
+    refreshWhenOffline: true,
+  });
+
   const [modalOpen, setModalOpen] = useState(false);
   const { status, data: session } = useSession();
   const [width, setWidth] = useState<number | undefined>(undefined);
+
 
   const handleWindowSizeChange = () => {
     setWidth(window?.innerWidth);
@@ -30,7 +48,6 @@ export default function Feed({ type }) {
     handleWindowSizeChange();
   }, []);
 
-  // call your useEffect
   useEffect(() => {
     window.addEventListener("resize", handleWindowSizeChange);
     return () => {
@@ -49,57 +66,53 @@ export default function Feed({ type }) {
     }
   }, [modalOpen, width]);
 
-  useEffect(() => {
-    async function getPosts() {
-      try {
-        setLoading(true);
-        const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/posts`
-        );
-        if (!type) {
-          setPosts(res.data.posts);
-          setLoading(false);
-          return;
-        }
-        const filtered = res.data.posts.filter(
-          (post: { category: any }) => post.category === type
-        );
-        setPosts(filtered);
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-        toastError("Error loading posts", undefined);
-      }
-    }
-    getPosts();
-  }, [type]);
+  if (error) {
+    console.error(error);
+    toastError("Error loading posts", undefined);
+  }
 
-  const updatePosts = (operation: string, newPost: any, id: any) => {
+  function updatePosts(operation: string, newPost: any, id: any) {
+    // an update function to update the feed optimistically
     if (operation === "delete") {
-      setPosts(posts.filter((post: { _id: any }) => post._id !== id));
-      return;
-    }
-    if (operation === "update") {
-      setPosts([newPost, ...posts]);
-      return;
-    }
-    // if a reply is added to a post
-    if (operation === "reply") {
-      // find the post and add the reply to it
-      const post = posts.find((post: { _id: any }) => post._id === id);
-      // check if the post already has a comment with the same id
-      const comment = post.comments.find(
-        (comment: { _id: any }) => comment._id === newPost._id
+      mutate(
+        (data) => ({
+          posts: data.posts.filter((post: { _id: any }) => post._id !== id),
+        }),
+        {
+          revalidate: false,
+          rollbackOnError: true,
+        }
       );
-      // if the comment doesn't exist, add it
-      if (!comment) {
-        post.comments.push(newPost);
-      }
-      return;
+    }
+    if (operation === "update" || operation === "add") {
+      mutate(
+        {
+          posts: [newPost, ...data?.posts],
+        }
+        , {
+          revalidate: false,
+          rollbackOnError: true,
+        }
+      );
+    }
+    if (operation === "reply") {
+      mutate({
+        posts: data?.posts.map((post: any) => {
+          if (post._id === id) {
+            post.comments?.push(newPost);
+          }
+          return post;
+        }),
+      },
+        {
+          revalidate: false,
+          rollbackOnError: true,
+        }
+      );
     }
   };
 
-  if (!loading && posts?.length === 0) {
+  if (!isLoading && data?.posts?.length === 0) {
     return (
       <div className="xl:ml-[350px] h-full border-l border-r border-lightBorderColor dark:border-darkBorderColor  xl:min-w-[680px] sm:ml-[82px] justify-center sm:w-[calc(100%-82px)] w-screen content-center items-center flex-grow max-w-2xl">
         <Navbar title={undefined} />
@@ -119,11 +132,6 @@ export default function Feed({ type }) {
         </div>
       </div>
     );
-  }
-
-  if (!loading || status !== "loading") {
-    // set overFlow to visible
-    document.body.style.overflow = "visible";
   }
 
   return (
@@ -155,7 +163,7 @@ export default function Feed({ type }) {
           </div>
         )}
 
-        {loading && status !== "loading" ? (
+        {isLoading && status !== "loading" ? (
           <div className="flex pt-4">
             <Spinner />
           </div>
@@ -168,34 +176,34 @@ export default function Feed({ type }) {
         )}
 
         <AnimatePresence>
-          {posts
-            ?.slice(0, 20)
-            .sort(
-              (
-                a: { createdAt: string | number | Date },
-                b: { createdAt: string | number | Date }
-              ) => {
-                const dateA = new Date(a.createdAt) as any;
-                const dateB = new Date(b.createdAt) as any;
-                return dateB - dateA; // Sort in descending order
-              }
-            )
-            .map((post: { _id: Key | null | undefined }) => (
-              <motion.div
-                key={post._id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1 }}
-              >
-                <Post
-                  key={post?._id}
-                  id={post?._id}
-                  post={post}
-                  updatePosts={updatePosts}
-                />
-              </motion.div>
-            ))}
+          {data?.posts
+                ?.slice(0, 40)
+                .sort(
+                  (
+                    a: { createdAt: string | number | Date },
+                    b: { createdAt: string | number | Date }
+                  ) => {
+                    const dateA = new Date(a.createdAt) as any;
+                    const dateB = new Date(b.createdAt) as any;
+                    return dateB - dateA; // Sort in descending order
+                  }
+                )
+                .map((post: { _id: Key | null | undefined }) => (
+                  <motion.div
+                    key={post._id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 1 }}
+                  >
+                    <Post
+                      key={post?._id}
+                      id={post?._id}
+                      post={post}
+                      updatePosts={updatePosts}
+                    />
+                  </motion.div>
+                ))}
         </AnimatePresence>
 
         {modalOpen && (

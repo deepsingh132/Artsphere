@@ -7,32 +7,32 @@ import { NextResponse } from "next/server";
 // Private route handle post update
 export async function PUT(request: Request) {
   const bearer = request.headers.get("Authorization");
+  const userId = request.headers.get("userId");
 
   if (!bearer) {
     return NextResponse.json({ message: "Not authorized" }, { status: 401 });
   }
-
-  const token = bearer.split(" ")[1];
-  const data = await request.json();
   const postId = request.url.split("/")[5];
-  const userId = data?.userId;
 
   await connectMongoDB();
+
   const post = await Post.findOne({ _id: postId }).lean() as any;
 
   if (!post) {
     return NextResponse.json({ message: "No posts found" }, { status: 404 });
   }
 
+  const { _id, username, name, userImg, content, timestamp, url } = await request.json();
+
   const newComment = {
-    _id: new mongoose.Types.ObjectId(),
+    _id: _id,
     userId: userId,
-    content: data.content,
-    username: data.username,
-    timestamp: data.timestamp,
-    url: data.url,
-    userImg: data.userImg,
-    name: data.name,
+    content: content,
+    username: username,
+    timestamp: timestamp,
+    url: url,
+    userImg: userImg,
+    name: name,
   };
 
   post.comments.push(newComment);
@@ -73,7 +73,7 @@ export async function DELETE(request: Request) {
 
     await post.updateOne({ comments: newComments });
 
-    return NextResponse.json({ post: post }, { status: 200 });
+    return NextResponse.json({ message: "Comment deleted" }, { status: 200 });
   } catch (error) {
     console.error("Error: ", error);
     return NextResponse.json({ message: "Something went wrong" }, { status: 500 });

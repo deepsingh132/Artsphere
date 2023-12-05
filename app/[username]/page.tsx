@@ -1,8 +1,9 @@
-import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import Widgets from "@/components/Widgets";
 import UserProfileData from "@/components/UserProfileData";
 import CommentModal from "@/components/CommentModal";
+import PostModal from "@/components/PostModal";
+import { backendUrl } from "../utils/config/backendUrl";
 
 export default async function UserProfile({}) {
   const { trendingPosts, randomUsersResults } = await getWidgetsData();
@@ -23,6 +24,7 @@ export default async function UserProfile({}) {
         trendingPosts={trendingPosts || []}
         randomUsersResults={randomUsersResults?.results || []}
       />
+      <PostModal updatePosts={undefined} type={"post"} />
       <CommentModal updatePosts={undefined} type={undefined} />
     </main>
   );
@@ -32,7 +34,7 @@ export default async function UserProfile({}) {
 
 async function getWidgetsData() {
 
-  if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
+  if (!backendUrl) {
     return {
       trendingPosts: [],
       randomUsersResults: [],
@@ -40,7 +42,7 @@ async function getWidgetsData() {
   }
 
   const trendingPosts = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/widgets/trending/posts`
+    `${backendUrl}/widgets/trending/posts`
   ).then((res) => res.json());
 
   // Who to follow section

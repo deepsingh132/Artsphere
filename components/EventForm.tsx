@@ -3,6 +3,7 @@ import { Modal } from "./modal";
 import { use, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { toastError, toastSuccess } from "./Toast";
+import { backendUrl } from "@/app/utils/config/backendUrl";
 
 export default function EventForm({ closeModal }) {
   const [eventTitle, setEventTitle] = useState("");
@@ -95,7 +96,7 @@ export default function EventForm({ closeModal }) {
       };
       setLoading(true);
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/events/${
+        `${backendUrl}/events/${
           session?.user?.email?.split("@")[0]
         }`,
         newEvent,

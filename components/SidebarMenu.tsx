@@ -169,7 +169,9 @@ export default function SidebarMenu({username, nav, toggleNavbar}) {
 
       {modalOpen && (
         <Modal closeModal={closeModal}>
-          <div className="contentContainer overflow-hidden mx-auto flex flex-col justify-between items-center w-[80vw] md:w-[440px] h-full">
+          <div
+            role="settings-modal"
+            className="contentContainer overflow-hidden mx-auto flex flex-col justify-between items-center w-[80vw] md:w-[440px] h-full">
             <h1 className="text-2xl dark:text-white font-bold">Settings</h1>
             <div className="settingsItem flex p-2 w-full mx-auto justify-between">
               <div className="flex mx-auto">
@@ -183,6 +185,7 @@ export default function SidebarMenu({username, nav, toggleNavbar}) {
             </div>
             <div className="doneButton flex justify-center w-full">
               <button
+                data-testid="done-button"
                 className="bg-primary min-w-[36px] min-h-[36px] hover:opacity-70 text-text font-bold  px-4 rounded-full"
                 onClick={closeModal}
               >

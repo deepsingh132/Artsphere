@@ -1,10 +1,13 @@
 import Sidebar from "@/components/Sidebar";
 import Widgets from "@/components/Widgets";
-import RefreshFeed from "@/components/RefreshFeed";
-import { Suspense } from "react";
 import Feed from "@/components/Feed";
+import { backendUrl } from "./utils/config/backendUrl";
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const { trendingPosts, randomUsersResults } = await getWidgetsData();
 
   return (
@@ -18,9 +21,9 @@ export default async function Home() {
 
         <div className="flex flex-grow w-full">
           {/* Feed */}
-          <Suspense fallback={<Feed type={undefined} />}>
-            <RefreshFeed />
-          </Suspense>
+          <Feed type={
+            searchParams?.feed ? searchParams?.feed : undefined
+          } />
 
           {/* Widgets */}
 
@@ -34,8 +37,6 @@ export default async function Home() {
   );
 
   async function getWidgetsData() {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
     if (!backendUrl || backendUrl === "undefined") {
       return {
         trendingPosts: [],
