@@ -20,6 +20,8 @@ import axios from "axios";
 import Image from "next/image";
 import YoutubeEmbed from "./YoutubeEmbed";
 import { toastError, toastSuccess } from "./Toast";
+import { backendUrl } from "@/app/utils/config/backendUrl";
+import { deleteComment } from "@/app/utils/postUtils";
 
 export default function Comment({ comment, commentId, originalPostId, updatePosts }) {
   const [likes, setLikes] = useState([]);
@@ -53,7 +55,7 @@ export default function Comment({ comment, commentId, originalPostId, updatePost
     setHasLiked(!hasLiked); //optimistic update
 
     const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/posts/${originalPostId}/like`,
+      `${backendUrl}/posts/${originalPostId}/like`,
       {
         userId: userId,
       },
@@ -74,22 +76,17 @@ export default function Comment({ comment, commentId, originalPostId, updatePost
 
   };
 
-  const deleteComment = async () => {
+  const deleteCommentFunc = async () => {
     updatePosts("delete", null, commentId); // optimistic update
-    try {
-      const res = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/posts/${commentId}/comment`,
-        {
-          headers: {
-            Authorization: `Bearer ${session?.user?.accessToken}`,
-          },
-        }
-      );
-      toastSuccess("Comment deleted", undefined);
-    } catch (error) {
+    const res = await deleteComment(commentId, session?.user?.accessToken);
+    if (!res) {
       toastError("Error deleting comment", undefined);
+      updatePosts("add", comment, commentId); // rollback
+    } else {
+      toastSuccess("Comment deleted", undefined);
     }
   };
+
 
   return (
     <div className="flex py-3 hover:bg-gray-50 dark:hover:bg-darkHover w-full max-w-[] sm:px-5 px-4 cursor-pointer border-b border-lightBorderColor dark:border-darkBorderColor">
@@ -173,7 +170,7 @@ export default function Comment({ comment, commentId, originalPostId, updatePost
           </div>
           {session?.user?.id === comment?.userId && (
             <TrashIcon
-              onClick={deleteComment}
+              onClick={deleteCommentFunc}
               className="h-9 w-9 !min-h-0 !min-w-0 hoverEffect p-2 hover:text-red-600 hover:bg-red-100"
             />
           )}

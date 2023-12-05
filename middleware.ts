@@ -63,7 +63,7 @@ export async function middleware(request: Request) {
   //add local host and vercel url
   response.headers.append(
     "Access-Control-Allow-Origin",
-    "http://localhost:3000" || `${process.env.NEXT_PUBLIC_FRONTEND_URL}`
+    `${process.env.NEXT_PUBLIC_FRONTEND_URL}` || "http://localhost:3000"
   );
 
   // middleware for private routes
@@ -81,7 +81,7 @@ export async function middleware(request: Request) {
   }
   if (
     request.url.includes("/comment") &&
-    (request.method === "POST" || request.method === "DELETE")
+    (request.method === "PUT" || request.method === "DELETE")
   ) {
     return checkAuth(request);
   }

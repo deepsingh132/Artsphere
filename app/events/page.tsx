@@ -6,6 +6,8 @@ import EventsLayout from "@/components/EventsLayout";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Login from "../login/page";
+import PostModal from "@/components/PostModal";
+import { backendUrl } from "../utils/config/backendUrl";
 
 export default async function Event({}) {
 
@@ -43,68 +45,70 @@ export default async function Event({}) {
           </div>
         </div>
         <Widgets
-          trendingPosts={trendingPosts || []}
-          randomUsersResults={randomUsersResults?.results || []}
+          trendingPosts={trendingPosts}
+          randomUsersResults={randomUsersResults}
         />
+        <PostModal updatePosts={undefined} type={"post"} />
       </div>
     </main>
   );
-}
 
-async function getEvents(session: any) {
+  async function getEvents(session: any) {
 
-  if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
-    return {
-      events: [],
-    };
-  }
-
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/events`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${session?.user?.accessToken}`,
-      },
+    if (!backendUrl || backendUrl === "undefined") {
+      return {
+        events: [],
+      };
     }
-  );
-  const data = await res.json();
 
-  return {
-    events: data?.events || [],
-  };
-}
+    try {
+      const res = await fetch(`${backendUrl}/events`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.user?.accessToken}`,
+        },
+      });
+      const data = await res.json();
 
-async function getWidgetsData() {
-
-  if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
-    return {
-      trendingPosts: [],
-      randomUsersResults: [],
-    };
+      return {
+        events: data?.events || [],
+      };
+    } catch (error) {
+      return {
+        events: [],
+      };
+    }
   }
 
-  const trendingPosts = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/widgets/trending/posts`
-  ).then((res) => res.json());
+  async function getWidgetsData() {
+    if (!backendUrl || backendUrl === "undefined") {
+      return {
+        trendingPosts: [],
+        randomUsersResults: [],
+      };
+    }
 
-  // Who to follow section
+    try {
+      const trendingPostsRes = await fetch(
+        `${backendUrl}/widgets/trending/posts`
+      );
+      const randomUsersRes = await fetch(
+        "https://randomuser.me/api/?results=10&inc=name,login,picture"
+      );
 
-  let randomUsersResults : any = [];
+      const trendingPosts = await trendingPostsRes.json();
+      const randomUsersResults = await randomUsersRes.json();
 
-  try {
-    const res = await fetch(
-      "https://randomuser.me/api?results=10&inc=name,login,picture"
-    );
-
-    randomUsersResults = await res.json();
-  } catch (e) {
-    randomUsersResults = [];
+      return {
+        trendingPosts: trendingPosts.trendingPosts,
+        randomUsersResults: randomUsersResults.results,
+      };
+    } catch (error) {
+      return {
+        trendingPosts: [],
+        randomUsersResults: [],
+      };
+    }
   }
-
-  return {
-    trendingPosts: trendingPosts?.trendingPosts,
-    randomUsersResults,
-  };
 }

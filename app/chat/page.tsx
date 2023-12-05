@@ -6,6 +6,7 @@ import Sidebar from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState, useRef } from "react";
+import PostModal from "@/components/PostModal";
 
 export default function Chat({}) {
   const [chats, setChats] = useState<any>([]);
@@ -151,14 +152,18 @@ export default function Chat({}) {
             </div>
             <div className="chatLayout flex flex-col md:ml-96 w-full h-screen relative">
               <div className="chatLayout transition-all duration-300 pt-20 pb-48 overflow-auto px-4 flex h-screen bg-gray-200 dark:bg-darkBg flex-col w-full">
-                <ChatBubble user={true} message={"Hello"} timestamp={Date.now() - 1000} />
+                <ChatBubble
+                  user={true}
+                  message={"Hello"}
+                  timestamp={Date.now() - 1000}
+                />
                 <ChatBubble
                   user={false}
                   message={"Hi"}
                   timestamp={Date.now()}
                 />
 
-                {chats.map((chat : any) => (
+                {chats.map((chat: any) => (
                   <ChatBubble
                     key={chat.id}
                     user={chat.user}
@@ -189,6 +194,7 @@ export default function Chat({}) {
           </div>
         </div>
       </div>
+      <PostModal updatePosts={undefined} type={"post"} />
     </main>
   );
 }

@@ -1,9 +1,8 @@
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import CommentModal from "@/components/CommentModal";
 import Sidebar from "@/components/Sidebar";
 import Widgets from "@/components/Widgets";
 import SinglePost from "@/components/SinglePost";
 import Navbar from "@/components/Navbar";
+import { backendUrl } from "@/app/utils/config/backendUrl";
 
 export default async function PostPage({ params }) {
   const { id } = params;
@@ -38,7 +37,7 @@ export default async function PostPage({ params }) {
 
 async function getWidgetsData() {
 
-  if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
+  if (!backendUrl || backendUrl === "undefined") {
     return {
       trendingPosts: [],
       randomUsersResults: [],
@@ -46,7 +45,7 @@ async function getWidgetsData() {
   }
 
   const trendingPosts = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/widgets/trending/posts`
+    `${backendUrl}/widgets/trending/posts`
   ).then((res) => res.json());
 
   // Who to follow section

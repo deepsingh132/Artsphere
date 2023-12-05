@@ -4,6 +4,7 @@ export default function Trending({ post }) {
   // open in same tab
   return (
     <a
+      data-testid="trending-post"
       rel="noreferrer"
       href={`${process.env.NEXT_PUBLIC_FRONTEND_URL + "/posts/" + post?._id}`}
       target="_self"

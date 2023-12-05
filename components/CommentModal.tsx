@@ -15,11 +15,13 @@ import { Modal } from "./modal";
 import Spinner from "./Spinner";
 import Input from "./Input";
 import { toastError } from "./Toast";
+import { backendUrl } from "@/app/utils/config/backendUrl";
 
 export default function CommentModal({type, updatePosts}) {
   const [open, setOpen] = useRecoilState(modalState);
   const [post, setPost] = useState({}) as any;
   const [postId] = useRecoilState(postIdState);
+
 
 
   // fetch the post
@@ -29,7 +31,7 @@ export default function CommentModal({type, updatePosts}) {
       setPost({});
       try {
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/posts/${postId}`
+          `${backendUrl}/posts/${postId}`
         );
         setPost(res.data.post);
       } catch (error) {

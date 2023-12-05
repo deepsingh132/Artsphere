@@ -18,6 +18,7 @@ import Navbar from "./Navbar";
 import nullImg from "@/public/null.png";
 import axios from "axios";
 import {toastSuccess, toastError} from "./Toast";
+import { backendUrl } from "@/app/utils/config/backendUrl";
 
 export default function UserProfileData({}) {
   const pathname = usePathname();
@@ -61,7 +62,7 @@ export default function UserProfileData({}) {
     async function getProfileData() {
      try {
        const res = await fetch(
-         `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${username}`
+         `${backendUrl}/user/${username}`
        );
        const data = await res.json();
        if (data.message === "User not found") {
@@ -85,7 +86,7 @@ export default function UserProfileData({}) {
     async function getPosts() {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/posts/username/${username}`
+          `${backendUrl}/posts/username/${username}`
         );
         const data = await res.json();
         if (data.message === "No posts found") {
@@ -109,7 +110,7 @@ export default function UserProfileData({}) {
         // Iterate through the liked post IDs and fetch each post's data
         for (const postId of likes) {
           const res = await fetch(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/posts/${postId}`
+            `${backendUrl}/posts/${postId}`
           );
           if (res.status === 404) {
             continue;
@@ -174,7 +175,7 @@ export default function UserProfileData({}) {
     // if yes, send a request to the backend
     try {
       const res = await axios.put(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${username}/verify`,
+        `${backendUrl}/user/${username}/verify`,
         {
           userId: session?.user?.id,
         },
@@ -222,7 +223,7 @@ export default function UserProfileData({}) {
     }
 
     const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${username}/follow`,
+      `${backendUrl}/user/${username}/follow`,
       {
         action: "follow",
         followFrom: session?.user?.id,

@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import axios from "axios";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { toastError, toastSuccess } from "./Toast";
+import { backendUrl } from "@/app/utils/config/backendUrl";
 
 export default function MapModal({ event, closeModal, user}) {
   const [liveBtnClicked, setLiveBtnClicked] = useState(false);
@@ -30,7 +31,7 @@ export default function MapModal({ event, closeModal, user}) {
     if (!secureToken.trim()) return;
     try {
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/events/live`,
+        `${backendUrl}/events/live`,
         {
           userId: user?.id,
           eventId: event?._id,

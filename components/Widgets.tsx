@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Spinner from "./Spinner";
+import { toastError } from "./Toast";
 
 export default function Widgets({ trendingPosts, randomUsersResults }) {
   const [postNum, setPostNum] = useState(3);
@@ -14,9 +15,17 @@ export default function Widgets({ trendingPosts, randomUsersResults }) {
   const { status } = useSession();
 
 
+  // check if trending posts or random users are empty issue a toast
+  if (status !== "loading" && trendingPosts?.length === 0) {
+    toastError("Error loading widgets", undefined);
+  }
+
+
   return (
     <div
-      className={`dark:bg-darkBg hidden lg:inline ml-[30px] pb-4 ${
+      role="widgets"
+      data-testid="widgets"
+      className={`hidden lg:inline ml-[30px] pb-4 ${
         status == "loading" ? "" : ""
       }  mr-[30px] space-y-5 min-w-[200px] max-w-[350px] xl:w-[350px]`}
     >
@@ -38,6 +47,18 @@ export default function Widgets({ trendingPosts, randomUsersResults }) {
         {status === "loading" ? (
           <Spinner />
         ) : (
+            // if there are no trending posts display a message
+            trendingPosts?.length === 0 ? (
+              <div className="flex flex-col items-center justify-center text-center">
+                <h1 className="text-xl font-bold dark:text-darkText">
+                  No trending posts
+              </h1>
+                <p className="text-gray-400 py-2">
+                  Check back later
+              </p>
+              </div>
+            ) : (
+              // if there are trending posts display them
           <AnimatePresence>
             {trendingPosts?.slice(0, postNum).map((post) => (
               <motion.div
@@ -50,7 +71,8 @@ export default function Widgets({ trendingPosts, randomUsersResults }) {
                 <Trending key={post._id} post={post} />
               </motion.div>
             ))}
-          </AnimatePresence>
+                </AnimatePresence>
+            )
         )}
         {status !== "loading" && trendingPosts?.length > 0 && (
           <button
@@ -81,6 +103,18 @@ export default function Widgets({ trendingPosts, randomUsersResults }) {
         {status === "loading" ? (
           <Spinner />
         ) : (
+            // if there are no random users display a message
+            randomUsersResults?.length === 0 ? (
+              <div className="flex flex-col items-center justify-center text-center">
+                <h1 className="text-xl font-bold dark:text-darkText">
+                  No featured artists
+              </h1>
+                <p className="text-gray-400 py-2">
+                  Check back later
+              </p>
+              </div>
+            ) : (
+              // if there are random users display them
           <AnimatePresence>
             {randomUsersResults?.slice(0, randomUserNum).map((randomUser) => (
               <motion.div
@@ -117,7 +151,8 @@ export default function Widgets({ trendingPosts, randomUsersResults }) {
                 </div>
               </motion.div>
             ))}
-          </AnimatePresence>
+                </AnimatePresence>
+            )
         )}
         {status !== "loading" && randomUsersResults?.length > 0 && (
           <button

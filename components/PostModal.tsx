@@ -13,9 +13,11 @@ export default function PostModal({ type, updatePosts }) {
     <div>
       {open && (
         <Modal closeModal={() => setOpen(false)}>
-          <div className="max-w-[512px] sm:min-w-[400px]">
+          <div
+            role="post-modal"
+            className="max-w-[512px] sm:min-w-[400px]">
             <div className="modalHeader p-2">
-            <span className="text-2xl font-bold">
+            <span className="text-2xl font-bold dark:text-darkText">
                 {type && "Express yourself"}
               </span>
             </div>

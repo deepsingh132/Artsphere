@@ -11,12 +11,13 @@ import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import YoutubeEmbed from "./YoutubeEmbed";
 import { Modal } from "./modal";
 import Spinner from "./Spinner";
-import { toastError, toastLoading, toastSuccess } from "./Toast";
+import { toastError, toastSuccess } from "./Toast";
 import toast from "react-hot-toast";
+import ObjectId from "@/app/utils/ObjectId";
+import { addComment, addPost } from "@/app/utils/postUtils";
 
 export default function Input({
   text,
@@ -26,7 +27,6 @@ export default function Input({
   phoneInputModal,
   setCommentModalState,
 }) {
-  const router = useRouter();
   const [input, setInput] = useState<string>("");
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [selectedFile, setSelectedFile] = useState<any>(null);
@@ -103,66 +103,13 @@ export default function Input({
     return str?.replace(/</g, "&lt;").replace(/>/g, "&gt;").slice(0, 300);
   };
 
-  async function sendReply(e: { preventDefault: () => void }) {
-    e.preventDefault();
-
-    if (
-      !input.trim() &&
-      !mediaUrl?.trim() &&
-      selectedFile === null &&
-      selectedFile instanceof File === false
-    ) {
-      alert("Please enter some text!");
-      return;
-    }
-    const sanitizedInput = sanitize(input?.trim());
-    const sanitizedUrl = sanitize(mediaUrl?.trim());
-    setLoading(true);
-    const reply = {
-      userId: session?.user?.id,
-      content: sanitizedInput || "",
-      username: session?.user?.email.split("@")[0],
-      timestamp: Date.now(),
-      userImg: session?.user?.image,
-      name: session?.user?.name,
-      category: "other",
-      url: sanitizedUrl || "",
-    };
-    try {
-      const res = await axios.put(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/posts/${id}/comment`,
-        reply,
-        {
-          headers: {
-            Authorization: `Bearer ${session?.user?.accessToken}`,
-          },
-        }
-      );
-      toastSuccess("Reply posted!", undefined);
-
-      if (res?.data?.post && updatePosts && !setCommentModalState) {
-        setLoading(false);
-        updatePosts("reply", res.data.post, id);
-      }
-
-      if (res?.data?.post && updatePosts && setCommentModalState) {
-        setLoading(false);
-        updatePosts("reply", res.data.post, id);
-        setCommentModalState(false);
-      }
-    } catch (error) {
-      toastError("Error posting reply", undefined);
-      setLoading(false);
-    }
-    setLoading(false);
-    setInput("");
-    setMediaUrl("");
-  }
-
   function addYoutubeVideo(url: string) {
     const videoId = url.split("v=")[1];
     // if the url is not a valid youtube url
-    const validFormats = ["https://www.youtube.com/watch?v=", "https://youtu.be/watch?v="];
+    const validFormats = [
+      "https://www.youtube.com/watch?v=",
+      "https://youtu.be/watch?v=",
+    ];
     if (url?.length === 0 || !validFormats.includes(url.split(videoId)[0])) {
       setYoutubeVideoUrl("");
       alert("Please enter a valid youtube url!");
@@ -203,6 +150,7 @@ export default function Input({
     }
 
     if (file.size > 4 * 1024 * 1024) {
+      setSelectedFile(null);
       alert("File size should be less than 4mb!");
       return;
     }
@@ -234,8 +182,68 @@ export default function Input({
     }
   };
 
+  async function sendReply(e: { preventDefault: () => void }) {
+    e.preventDefault();
+    setLoading(true);
+    if (
+      !input.trim() &&
+      !mediaUrl?.trim() &&
+      selectedFile === null &&
+      selectedFile instanceof File === false
+    ) {
+      alert("Please enter some text!");
+      return;
+    }
+    const sanitizedInput = sanitize(input?.trim());
+    const sanitizedUrl = sanitize(mediaUrl?.trim());
+
+    const reply = {
+      _id: ObjectId(),
+      userId: session?.user?.id,
+      content: sanitizedInput || "",
+      username: session?.user?.email.split("@")[0],
+      timestamp: Date.now(),
+      userImg: session?.user?.image,
+      name: session?.user?.name,
+      category: "other",
+      url: sanitizedUrl || "",
+    };
+
+    // early return if the post is empty
+    if (reply.content?.trim().length === 0 && reply.url?.trim().length === 0) {
+      setLoading(false);
+      return;
+    }
+
+    // if updatePosts is not null, then the post was sent from the home page
+    if (updatePosts) {
+      updatePosts("reply", reply, id);
+    }
+
+    const res = await addComment(reply, session?.user?.accessToken, id);
+    if (res) {
+      toastSuccess("Comment added!", undefined);
+    } else {
+      toastError("Error adding reply!", undefined);
+    }
+    setLoading(false);
+
+    if (phoneInputModal) {
+      phoneInputModal(false);
+    }
+
+    if (setCommentModalState) {
+      setCommentModalState(false);
+    }
+
+    setLoading(false);
+    setInput("");
+    setMediaUrl("");
+  }
+
   async function sendPost(e: { preventDefault: () => void }) {
     e.preventDefault();
+    setLoading(true);
     if (
       !input.trim() &&
       !mediaUrl?.trim() &&
@@ -250,6 +258,7 @@ export default function Input({
     const sanitizedUrl = sanitize(mediaUrl?.trim());
 
     const post = {
+      _id: ObjectId(),
       username: session?.user?.email.split("@")[0] || "test",
       userImg: session?.user?.image || "",
       content: sanitizedInput || "",
@@ -257,41 +266,38 @@ export default function Input({
       url: sanitizedUrl || "",
       name: session?.user?.name || "Test User",
       authorID: session?.user?.id,
-    };
+    } as Post;
 
-    if (post.content.trim().length > 0 || post.url.trim().length > 0) {
-      try {
-        setLoading(true);
-
-        const res = await axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/posts`,
-          post,
-          {
-            headers: {
-              Authorization: `Bearer ${session?.user?.accessToken}`,
-            },
-          }
-        );
-        if (phoneInputModal) {
-          phoneInputModal();
-        }
-        toastSuccess("Post sent!", undefined);
-        setLoading(false);
-        if (res?.data?.post && updatePosts && !setCommentModalState) {
-          updatePosts("update", res.data.post);
-        }
-        if (res?.data?.post && updatePosts && setCommentModalState) {
-          updatePosts("update", res.data.post);
-          setCommentModalState(false);
-        }
-        setInput("");
-        setMediaUrl("");
-        setSelectedFile(null);
-      } catch (error) {
-        setLoading(false);
-        toastError("Error sending post", undefined);
-      }
+    // early return if the post is empty
+    if (post.content?.trim().length === 0 && post.url?.trim().length === 0) {
+      setLoading(false);
+      return;
     }
+
+    // if updatePosts is not null, then the post was sent from the home page
+    if (updatePosts) {
+      updatePosts("add", post, undefined);
+    }
+
+    const res = await addPost(post, session?.user?.accessToken);
+    if (res) {
+      toastSuccess("Post sent!", undefined);
+    } else {
+      toastError("Error sending post", undefined);
+    }
+    setLoading(false);
+
+    if (phoneInputModal) {
+      phoneInputModal(false);
+    }
+
+    if (setCommentModalState) {
+      setCommentModalState(false);
+    }
+
+    setInput("");
+    setMediaUrl("");
+    setSelectedFile(null);
   }
 
   function handleInput(e: { target: { innerText: string } }) {
@@ -321,6 +327,7 @@ export default function Input({
       <div className={style ? style : "hidden sm:block z-0 lg:max-w-[700px]"}>
         {currentUser && (
           <div
+            data-testid="input-container"
             className={
               style
                 ? style
@@ -332,7 +339,11 @@ export default function Input({
               alt="user-img"
               width={40}
               height={40}
-              style={setCommentModalState || phoneInputModal  ? { marginRight: "12px" } : {}}
+              style={
+                setCommentModalState || phoneInputModal
+                  ? { marginRight: "12px" }
+                  : {}
+              }
               className="h-11 w-11 rounded-full cursor-pointer hover:brightness-95"
             />
             <div
@@ -348,10 +359,12 @@ export default function Input({
                 } divide-y divide-gray-200 `}
               >
                 <span
-                  className={`${setCommentModalState || phoneInputModal ? "sm:max-w-[400px] max-w-[calc(70vw)]" : "max-w-[550px]"}  flex-shrink sm:min-h-[24px] ${
-                    style
-                      ? "max-h-[70vh]"
-                      : "max-h-[720px]"
+                  className={`${
+                    setCommentModalState || phoneInputModal
+                      ? "sm:max-w-[400px] max-w-[calc(70vw)]"
+                      : "max-w-[550px]"
+                  }  flex-shrink sm:min-h-[24px] ${
+                    style ? "max-h-[70vh]" : "max-h-[720px]"
                   } !p-0 border-none dark:bg-darkBg dark:text-darkText cursor-text focus:ring-0 text-sm sm:text-lg placeholder-gray-700 tracking-wide break-words  text-gray-700`}
                   id="contentEditableInput"
                   inputMode="text"

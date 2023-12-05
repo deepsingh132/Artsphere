@@ -33,11 +33,6 @@ module.exports = {
         },
       },
 
-      transitionProperty: {
-        backgroundColor: "background-color",
-        transitionDuration: "transition-duration",
-      },
-
       animation: {
         chevronMove: "chevronMove 2s ease-in-out infinite",
       },
