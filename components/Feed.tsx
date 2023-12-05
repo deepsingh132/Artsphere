@@ -29,7 +29,7 @@ export default function Feed({ type }) {
   const key = type ? `${backendUrl}/posts?type=${type}` : `${backendUrl}/posts`;
   const { data, error, isLoading, mutate } = useSWR(key, fetcher, {
     // refreshInterval: 30000,
-    revalidateOnFocus: true,
+    revalidateOnFocus: false,
     revalidateOnReconnect: true,
     refreshWhenOffline: true,
   });
