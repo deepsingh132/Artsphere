@@ -10,12 +10,10 @@ import {
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartIconFilled } from "@heroicons/react/24/solid";
 import Moment from "react-moment";
-
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import axios from "axios";
 import { useRecoilState } from "recoil";
 import { modalState, postIdState } from "@/app/atom/modalAtom";
 import YoutubeEmbed from "./YoutubeEmbed";
@@ -26,7 +24,6 @@ export default function Post({ post, id, updatePosts }) {
   const [hasLiked, setHasLiked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useRecoilState(modalState);
   const [postId, setPostId] = useRecoilState(postIdState);
-  const [userId, setUserId] = useState<string>("");
   const [currentUser, setCurrentUser] = useState<any>(null);
   const router = useRouter();
 
@@ -35,7 +32,6 @@ export default function Post({ post, id, updatePosts }) {
   useEffect(() => {
     if (status === "authenticated") {
       setCurrentUser(session?.user);
-      setUserId(session?.user?.id ?? "");
     } else {
       setCurrentUser(null);
     }
@@ -97,10 +93,11 @@ export default function Post({ post, id, updatePosts }) {
     <div
       data-testid="post"
       role="post"
-      className={`flex hover:bg-gray-50 dark:hover:bg-darkHover md:w-full sm:p-3 p-2 truncate cursor-pointer first:pt-4 border-b border-lightBorderColor dark:border-darkBorderColor`}
+      className={`flex hover:bg-gray-50 dark:hover:bg-darkHover transition-colors ease-in duration-300 md:w-full sm:p-3 p-2 truncate cursor-pointer first:pt-4 border-b border-lightBorderColor dark:border-darkBorderColor`}
     >
       {/* user image */}
       <Image
+        data-testid="post-user-image"
         onClick={() => router.push(`/${post?.username}`)}
         className=" h-10 w-10 rounded-full sm:ml-2 ml-1"
         width="50"
@@ -120,6 +117,7 @@ export default function Post({ post, id, updatePosts }) {
             </h4>
 
             <span
+              data-testid="post-username"
               className="text-sm text-gray-500 hover:underline truncate sm:text-[15px] mr-1"
               onClick={() => router.push(`/${post?.username}`)}
             >
@@ -143,8 +141,11 @@ export default function Post({ post, id, updatePosts }) {
 
         {/* post text */}
 
-        <div onClick={() => router.push(`/posts/${id}`)}>
+        <div
+          data-testid="post-content"
+          onClick={() => router.push(`/posts/${id}`)}>
           <p
+            data-testid="post-text"
             onClick={() => router.push(`/posts/${id}`)}
             className="text-gray-800 dark:text-darkText whitespace-normal text-[15px] sm:mr-2 sm:text-[16px] mb-2"
           >
@@ -158,6 +159,7 @@ export default function Post({ post, id, updatePosts }) {
             post?.url && !post?.url?.includes("youtube") && (
               <Image
                 onClick={() => router.push(`/posts/${id}`)}
+                data-testid="post-image"
                 className="rounded-2xl max-h-80 w-[100%] sm:w-full object-cover"
                 width={500}
                 height={500}
@@ -168,7 +170,8 @@ export default function Post({ post, id, updatePosts }) {
           }
 
           {post?.url && post?.url?.includes("youtube") && (
-            <YoutubeEmbed embedId={post?.url?.split("v=")[1]} />
+            <YoutubeEmbed
+              embedId={post?.url?.split("v=")[1]} />
           )}
         </div>
 
@@ -177,6 +180,7 @@ export default function Post({ post, id, updatePosts }) {
         <div className="flex justify-between text-gray-500 ml-[-8px]">
           <div className="flex items-center select-none">
             <ChatIcon
+              data-testid="post-comment-button"
               onClick={() => {
                 if (!currentUser) {
                   // signIn();
@@ -189,12 +193,14 @@ export default function Post({ post, id, updatePosts }) {
               className="h-9 hoverEffect !min-h-0 !min-w-0  p-2 hover:text-sky-500 hover:bg-sky-100"
             />
             {post?.comments?.length > 0 && (
-              <span className="text-sm">{post?.comments.length}</span>
+              <span
+                data-testid="post-comment-count"
+                className="text-sm">{post?.comments.length}</span>
             )}
           </div>
-          {userId === post?.authorID && (
+          {session?.user?.id === post?.authorID && (
             <TrashIcon
-              data-testid="delete-post-button"
+              data-testid="post-delete-button"
               onClick={deletePostFunc}
               className="h-9 w-9 hoverEffect !min-h-0 !min-w-0 p-2 hover:text-red-600 hover:bg-red-100"
             />
@@ -202,11 +208,13 @@ export default function Post({ post, id, updatePosts }) {
           <div className="flex items-center">
             {hasLiked ? (
               <HeartIconFilled
+                data-testid="post-like-button-filled"
                 onClick={likePostFunc}
                 className="h-9 w-9 hoverEffect !min-h-0 !min-w-0 p-2 text-red-600 hover:bg-red-100"
               />
             ) : (
-              <HeartIcon
+                <HeartIcon
+                  data-testid="post-like-button"
                 onClick={likePostFunc}
                 className="h-9 w-9 hoverEffect !min-h-0 !min-w-0 p-2 hover:text-red-600 hover:bg-red-100"
               />

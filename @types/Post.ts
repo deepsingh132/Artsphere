@@ -1,4 +1,5 @@
 type Post = {
+  _id?: string;
   content?: string | null;
   name: string;
   username: string;
