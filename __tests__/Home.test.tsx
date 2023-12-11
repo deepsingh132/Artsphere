@@ -165,8 +165,6 @@ describe("Home Component", () => {
       } as Response)
     );
 
-    // screen.debug(undefined, Infinity);
-
     // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       render(
@@ -180,7 +178,6 @@ describe("Home Component", () => {
     const trendingPostsElementsUndefined =
       screen.queryAllByTestId("trending-post");
     expect(trendingPostsElementsUndefined.length).toBe(0);
-    // screen.debug(undefined, Infinity);
 
     // // reset the backend url
     // process.env.NEXT_PUBLIC_BACKEND_URL = "http://localhost:3000/api";

@@ -177,6 +177,5 @@ describe("Navbar for authenticated user", () => {
     window.innerWidth = 1024;
     fireEvent(window, new Event("resize"));
 
-    screen.debug(undefined, Infinity);
   });
 });
