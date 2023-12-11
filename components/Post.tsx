@@ -93,7 +93,7 @@ export default function Post({ post, id, updatePosts }) {
     <div
       data-testid="post"
       role="post"
-      className={`flex hover:bg-gray-50 dark:hover:bg-darkHover transition-colors ease-in duration-500 md:w-full sm:p-3 p-2 truncate cursor-pointer first:pt-4 border-b border-lightBorderColor dark:border-darkBorderColor`}
+      className={`flex hover:bg-gray-50 dark:hover:bg-darkHover transition-colors ease-in duration-300 md:w-full sm:p-3 p-2 truncate cursor-pointer first:pt-4 border-b border-lightBorderColor dark:border-darkBorderColor`}
     >
       {/* user image */}
       <Image

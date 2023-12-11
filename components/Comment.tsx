@@ -89,7 +89,7 @@ export default function Comment({ comment, commentId, originalPostId, updatePost
 
 
   return (
-    <div className="flex py-3 hover:bg-gray-50 dark:hover:bg-darkHover w-full max-w-[] sm:px-5 px-4 cursor-pointer border-b border-lightBorderColor dark:border-darkBorderColor">
+    <div className="flex py-3 hover:bg-gray-50 dark:hover:bg-darkHover transition-colors ease-in duration-300 w-full max-w-[] sm:px-5 px-4 cursor-pointer border-b border-lightBorderColor dark:border-darkBorderColor">
       {/* user image */}
       <Image
         height={40}
@@ -136,17 +136,15 @@ export default function Comment({ comment, commentId, originalPostId, updatePost
           {comment?.content}
         </p>
 
-        {
-          comment?.url && !comment?.url?.includes("youtube") && (
-            <Image
-              className="rounded-2xl max-h-80 w-[100%] sm:w-full object-cover"
-              width={500}
-              height={500}
-              src={comment?.url}
-              alt="img"
-            />
-          )
-        }
+        {comment?.url && !comment?.url?.includes("youtube") && (
+          <Image
+            className="rounded-2xl max-h-80 w-[100%] sm:w-full object-cover"
+            width={500}
+            height={500}
+            src={comment?.url}
+            alt="img"
+          />
+        )}
 
         {comment?.url && comment?.url?.includes("youtube") && (
           <YoutubeEmbed embedId={comment?.url?.split("v=")[1]} />
