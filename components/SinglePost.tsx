@@ -10,6 +10,7 @@ import Spinner from "./Spinner";
 import CommentModal from "./CommentModal";
 import useSWR from "swr";
 import { backendUrl } from "@/app/utils/config/backendUrl";
+import { toastError } from "./Toast";
 
 export default function SinglePost({ id }) {
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -19,16 +20,14 @@ export default function SinglePost({ id }) {
   const fetcher = (url: RequestInfo | URL) =>
     fetch(url).then((res) => {
       if (!res.ok) {
-        throw Error("Error loading post");
+        toastError("Error fetching post", undefined);
       }
       return res.json();
     });
 
-  const { data, error, isLoading, mutate } = useSWR(
-    `${backendUrl}/posts/${id}`,
-    fetcher,
+  const { data, error, isLoading, mutate } = useSWR( status === "authenticated" ? `${backendUrl}/posts/${id}` : null, fetcher,
     {
-      revalidateOnFocus: true,
+      revalidateOnFocus: false,
       revalidateOnReconnect: true,
       refreshWhenOffline: true,
     }
@@ -43,13 +42,6 @@ export default function SinglePost({ id }) {
       setIsFetching(false);
     }
   }, [status, session]);
-
-  // useEffect(() => {
-  //   if (data?.post) {
-  //     setComments(data?.post?.comments);
-  //     setIsFetching(false);
-  //   }
-  // }, [data?.post]);
 
   useEffect(() => {
     if (!currentUser) {
@@ -108,7 +100,7 @@ export default function SinglePost({ id }) {
 
   return (
     <div>
-      {isFetching ? ( // Check if isLoading is true
+      {isFetching || isLoading ? ( // Check if isLoading is true
         <div className="flex items-center justify-center h-screen">
           <Spinner />
         </div>

@@ -224,6 +224,7 @@ export default function Input({
     if (res) {
       toastSuccess("Comment added!", undefined);
     } else {
+      // TODO: add rollback optimistic update for replies
       toastError("Error adding reply!", undefined);
     }
     setLoading(false);
@@ -283,6 +284,8 @@ export default function Input({
     if (res) {
       toastSuccess("Post sent!", undefined);
     } else {
+      // rollback optimistic update
+      updatePosts("delete", null, post._id);
       toastError("Error sending post", undefined);
     }
     setLoading(false);
@@ -324,7 +327,10 @@ export default function Input({
 
   return (
     <>
-      <div className={style ? style : "hidden sm:block z-0 lg:max-w-[700px]"}>
+      <div
+        data-testid="input"
+        className={style ? style : "hidden sm:block z-0 lg:max-w-[700px]"}
+      >
         {currentUser && (
           <div
             data-testid="input-container"
@@ -335,6 +341,7 @@ export default function Input({
             }
           >
             <Image
+              data-testid="input-user-avatar"
               src={session?.user?.image as string}
               alt="user-img"
               width={40}
@@ -359,6 +366,7 @@ export default function Input({
                 } divide-y divide-gray-200 `}
               >
                 <span
+                  data-testid="input-custom-inputField"
                   className={`${
                     setCommentModalState || phoneInputModal
                       ? "sm:max-w-[400px] max-w-[calc(70vw)]"
@@ -426,6 +434,7 @@ export default function Input({
                   <div className="flex">
                     {!mediaUrl?.trim() && (
                       <div
+                        data-testid="input-photo-icon"
                         className=""
                         onClick={() => filePickerRef.current?.click() as any}
                       >
@@ -468,7 +477,8 @@ export default function Input({
                       <Spinner />
                     </div>
                   ) : (
-                    <button
+                      <button
+                        data-testid="input-post-button"
                       onClick={id ? sendReply : sendPost}
                       disabled={
                         (!input.trim() &&

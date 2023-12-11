@@ -26,6 +26,8 @@ export default function Feed({ type }) {
       return res.json();
     });
 
+
+
   const key = type ? `${backendUrl}/posts?type=${type}` : `${backendUrl}/posts`;
   const { data, error, isLoading, mutate } = useSWR(key, fetcher, {
     // refreshInterval: 30000,
@@ -37,7 +39,6 @@ export default function Feed({ type }) {
   const [modalOpen, setModalOpen] = useState(false);
   const { status, data: session } = useSession();
   const [width, setWidth] = useState<number | undefined>(undefined);
-
 
   const handleWindowSizeChange = () => {
     setWidth(window?.innerWidth);
@@ -67,7 +68,6 @@ export default function Feed({ type }) {
   }, [modalOpen, width]);
 
   if (error) {
-    console.error(error);
     toastError("Error loading posts", undefined);
   }
 
@@ -75,7 +75,7 @@ export default function Feed({ type }) {
     // an update function to update the feed optimistically
     if (operation === "delete") {
       mutate(
-        (data) => ({
+        (data: { posts: any[]; }) => ({
           posts: data.posts.filter((post: { _id: any }) => post._id !== id),
         }),
         {
@@ -114,7 +114,9 @@ export default function Feed({ type }) {
 
   if (!isLoading && data?.posts?.length === 0) {
     return (
-      <div className="xl:ml-[350px] h-full border-l border-r border-lightBorderColor dark:border-darkBorderColor  xl:min-w-[680px] sm:ml-[82px] justify-center sm:w-[calc(100%-82px)] w-screen content-center items-center flex-grow max-w-2xl">
+      <div
+        data-testid="feed"
+        className="xl:ml-[350px] h-full border-l border-r border-lightBorderColor dark:border-darkBorderColor  xl:min-w-[680px] sm:ml-[82px] justify-center sm:w-[calc(100%-82px)] w-screen content-center items-center flex-grow max-w-2xl">
         <Navbar title={undefined} />
         <Input
           updatePosts={updatePosts}
@@ -136,7 +138,10 @@ export default function Feed({ type }) {
 
   return (
     <>
-      <div className="mainContent flex flex-col xl:ml-[350px] border-l border-r border-lightBorderColor dark:border-darkBorderColor w-screen sm:max-w-[calc(100vw-82px)] md:max-w-2xl xl:min-w-[680px] sm:ml-[82px] lg:max-w-[680px] flex-grow">
+      <div
+        data-testid="feed"
+        role="feed"
+        className="mainContent flex flex-col xl:ml-[350px] border-l border-r border-lightBorderColor dark:border-darkBorderColor w-screen sm:max-w-[calc(100vw-82px)] md:max-w-2xl xl:min-w-[680px] sm:ml-[82px] lg:max-w-[680px] flex-grow">
         <Navbar title={undefined} />
         <Input
           updatePosts={updatePosts}
@@ -151,13 +156,16 @@ export default function Feed({ type }) {
           // an absolute floating button to create a post on mobile
           <div className="fixed sm:hidden bottom-5 right-5 z-40">
             <button
+              data-testid="feed-fab"
               type="button"
               role="btn"
               onClick={() => setModalOpen(true)}
               className="flex self-center bg-primary rounded-full h-[56px] w-[56px] hover:brightness-90 hover:shadow-md transition-all duration-300 ease-in-out outline-none items-center justify-center"
             >
               <span className="flex items-center font-black">
-                <PencilSquareIcon className="h-6 w-6 text-text" />
+                <PencilSquareIcon
+                  data-testid="feed-fab-icon"
+                  className="h-6 w-6 text-text" />
               </span>
             </button>
           </div>
@@ -208,7 +216,9 @@ export default function Feed({ type }) {
 
         {modalOpen && (
           <Modal closeModal={closeModal}>
-            <div className="max-w-full p-3">
+            <div
+              data-testid="feed-fab-modal"
+              className="max-w-full p-3">
               <h1 className="text-2xl font-bold text-text dark:text-darkText">
                 Create a post
               </h1>

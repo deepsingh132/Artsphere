@@ -8,7 +8,6 @@ import { modalState, postIdState } from "@/app/atom/modalAtom";
 import Moment from "react-moment";
 import { useRecoilState } from "recoil";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
 import axios from "axios";
 import YoutubeEmbed from "./YoutubeEmbed";
 import { Modal } from "./modal";
@@ -21,8 +20,6 @@ export default function CommentModal({type, updatePosts}) {
   const [open, setOpen] = useRecoilState(modalState);
   const [post, setPost] = useState({}) as any;
   const [postId] = useRecoilState(postIdState);
-
-
 
   // fetch the post
   useEffect(() => {
@@ -41,12 +38,14 @@ export default function CommentModal({type, updatePosts}) {
     if (postId !== "id") fetchPost();
   }, [open, postId]);
 
-
   return (
     <div>
       {open && (
         <Modal closeModal={() => setOpen(false)}>
-          <div className="max-w-[512px] overflow-auto">
+          <div
+            data-testid="comment-modal"
+            role="dialog"
+            className="max-w-[512px] overflow-auto">
             <div className="py-3">
               <span
                 onClick={() => setOpen(false)}
@@ -69,7 +68,9 @@ export default function CommentModal({type, updatePosts}) {
 
             {post?._id ? (
               <>
-                <div className="flex p-3 mt-2 justify-start space-x-3 relative">
+                <div
+                  data-testid="comment-modal-post"
+                  className="flex p-3 mt-2 justify-start space-x-3 relative">
                   <div className="flex">
                     <span className="w-0.5 h-[calc(100%-60px)] mt-4 z-0 absolute left-8 top-11 bg-gray-300 dark:bg-darkBorderColor " />
                     <Image

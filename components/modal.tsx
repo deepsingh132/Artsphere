@@ -21,6 +21,7 @@ export const Modal = ({ children, closeModal }) => {
       onClick={closeModal}
     >
       <div
+        data-testid="modal"
         className="modal relative overflow-auto shadow rounded-2xl border dark:border-gray-700 border-cardBorder bg-white dark:bg-darkBg md:max-w-lg max-w-[90vw] max-h-[90vh] p-2 opacity-100 transition-none duration-0"
         onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the modal
       >

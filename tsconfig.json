@@ -19,6 +19,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "types": [
+      "jest",
+      "@testing-library/jest-dom"
+    ],
     "plugins": [
       {
         "name": "next"
@@ -34,6 +38,6 @@
     ".next/types/**/*.ts",
     "app/api/auth/login.js",
     "app/login/page.tsx"
-, "app/api/auth/[...nextauth]/route.ts"  ],
+, "app/api/auth/[...nextauth]/route.ts", "jest.config.js", "jest.polyfills.js", "__tests__/Home.test.tsx"  ],
   "exclude": ["node_modules"],
 }

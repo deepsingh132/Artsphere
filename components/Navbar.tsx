@@ -3,9 +3,7 @@
 import NavbarItems from "@/components/NavbarItems";
 import {
   ArrowLeftIcon,
-  InboxIcon,
-  SparklesIcon,
-  UserIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
@@ -18,9 +16,8 @@ export default function Navbar({ title }) {
   const router = useRouter();
   const path = usePathname();
   const [username, setUsername] = useState<string>("") as any;
-  const [isLoaded, setIsLoaded] = useState(false);
   const [navbarOpen, setNavbarOpen] = useState(false); // this is for the responsive navbar
-  const { status, data: Session } = useSession();
+  const { status, data: session } = useSession();
 
   useEffect(() => {
     if (navbarOpen) {
@@ -32,10 +29,9 @@ export default function Navbar({ title }) {
 
   useEffect(() => {
     if (status === "authenticated") {
-      setUsername(Session?.user?.email.split("@")[0]);
-      setIsLoaded(true);
+      setUsername(session?.user?.email.split("@")[0]);
     }
-  }, [Session, status]);
+  }, [session, status]);
 
   // close navbar if screen is resized
   useEffect(() => {
@@ -52,17 +48,22 @@ export default function Navbar({ title }) {
 
   return (
     <>
-      <div className="top-0 sticky z-30 bg-[#ffffffd9] dark:bg-[#000000a6]">
+      <div
+        data-testid="navbar"
+        className="top-0 sticky z-30 bg-[#ffffffd9] dark:bg-[#000000a6]"
+      >
         <div className="flex py-2 px-3 bg-transparent  border-b border-lightBorderColor dark:border-darkBorderColor backdrop-blur-md">
           {" "}
           {/* Profile photo */}
-          {isLoaded && path == "/" && (
+          {status === "authenticated" && path === "/" && (
             <div
+              data-testid="navbarPfp"
+              role="button"
               className="sm:hidden flex items-center cursor-pointer justify-center"
               onClick={toggleNavbar}
             >
               <Image
-                src={Session?.user?.image as string}
+                src={session?.user?.image as string}
                 width={40}
                 height={40}
                 alt=""
@@ -72,7 +73,11 @@ export default function Navbar({ title }) {
           )}
           {title ? (
             <div className="flex  items-center justify-center">
-              <div className="hoverEffect !min-h-0 !min-w-0" onClick={() => router.back()}>
+              <div
+                data-testid="back-btn"
+                className="hoverEffect !min-h-0 !min-w-0"
+                onClick={() => router.back()}
+              >
                 <ArrowLeftIcon className="h-5 dark:text-darkText" />
               </div>
               <h2 className="text-lg sm:text-xl dark:text-darkText mx-2 font-bold cursor-pointer">
@@ -95,24 +100,36 @@ export default function Navbar({ title }) {
           onClick={toggleNavbar}
         >
           <div
+            data-testid="sidebar-menu"
             className="flex flex-col absolute overflow-scroll shadow-lg  bg-white dark:bg-darkBg max-w-[70%] min-w-[280px] min-h-screen top-0 z-50 items-center"
             onClick={(e) => e.stopPropagation()}
           >
-            {isLoaded ? (
-              <div className="flex flex-col w-full justify-start p-4">
+            <div
+              data-testid="close-navbar-btn"
+              role="button"
+              onClick={toggleNavbar}
+              className="closeNavBtn absolute top-1 right-1 flex items-center justify-center closeNavbar hoverEffect"
+            >
+              <XMarkIcon className="h-5 dark:text-darkText" />
+            </div>
+
+            {status === "authenticated" && (
+              <div
+                data-testid="profile-container"
+                className="flex flex-col w-full justify-start p-4">
                 <Image
-                  src={Session?.user?.image as string}
+                  src={session?.user?.image as string}
                   width={40}
                   height={40}
                   alt=""
                   className="rounded-full"
                 />
                 <h1 className="text-lg flex font-bold cursor-pointer">
-                  {Session?.user?.name}
+                  {session?.user?.name}
                 </h1>
 
                 <p className="text-gray-500">
-                  @{Session?.user?.email.split("@")[0]}
+                  @{session?.user?.email.split("@")[0]}
                 </p>
 
                 <div className="followContainer flex flex-row flex-wrap items-center w-full">
@@ -127,11 +144,13 @@ export default function Navbar({ title }) {
                 </div>
 
                 <div className="menuContainer">
-                  <SidebarMenu toggleNavbar={toggleNavbar} username={username} nav={"true"} />
+                  <SidebarMenu
+                    toggleNavbar={toggleNavbar}
+                    username={username}
+                    nav={"true"}
+                  />
                 </div>
               </div>
-            ) : (
-              <Spinner />
             )}
           </div>
         </div>
