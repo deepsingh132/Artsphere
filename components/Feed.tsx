@@ -33,7 +33,6 @@ export default function Feed({ type }) {
     // refreshInterval: 30000,
     revalidateOnFocus: false,
     revalidateOnReconnect: true,
-    refreshWhenOffline: true,
   });
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -97,13 +96,13 @@ export default function Feed({ type }) {
     }
     if (operation === "reply") {
       mutate({
-        posts: data?.posts.map((post: any) => {
-          if (post._id === id) {
-            post.comments?.push(newPost);
-          }
-          return post;
-        }),
-      },
+          posts: data?.posts.map((post: any) => {
+            if (post._id === id) {
+              post.comments?.push(newPost);
+            }
+            return post;
+          }),
+        },
         {
           revalidate: false,
           rollbackOnError: true,
@@ -185,33 +184,33 @@ export default function Feed({ type }) {
 
         <AnimatePresence>
           {data?.posts
-                ?.slice(0, 40)
-                .sort(
-                  (
-                    a: { createdAt: string | number | Date },
-                    b: { createdAt: string | number | Date }
-                  ) => {
-                    const dateA = new Date(a.createdAt) as any;
-                    const dateB = new Date(b.createdAt) as any;
-                    return dateB - dateA; // Sort in descending order
-                  }
-                )
-                .map((post: { _id: Key | null | undefined }) => (
-                  <motion.div
-                    key={post._id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 1 }}
-                  >
-                    <Post
-                      key={post?._id}
-                      id={post?._id}
-                      post={post}
-                      updatePosts={updatePosts}
-                    />
-                  </motion.div>
-                ))}
+            ?.slice(0, 40)
+            .sort(
+              (
+                a: { createdAt: string | number | Date },
+                b: { createdAt: string | number | Date }
+              ) => {
+                const dateA = new Date(a.createdAt) as any;
+                const dateB = new Date(b.createdAt) as any;
+                return dateB - dateA; // Sort in descending order
+              }
+            )
+            .map((post: { _id: Key | null | undefined }) => (
+              <motion.div
+                key={post._id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1 }}
+              >
+                <Post
+                  key={post?._id}
+                  id={post?._id}
+                  post={post}
+                  updatePosts={updatePosts}
+                />
+              </motion.div>
+            ))}
         </AnimatePresence>
 
         {modalOpen && (

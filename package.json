@@ -14,7 +14,7 @@
     "@heroicons/react": "^2.0.18",
     "@react-google-maps/api": "^2.19.2",
     "axios": "^1.5.0",
-    "framer-motion": "^6.3.3",
+    "framer-motion": "11.0.6",
     "jose": "^4.14.6",
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.29.3",
