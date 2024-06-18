@@ -18,14 +18,14 @@ import { backendUrl } from "@/app/utils/config/backendUrl";
 
 export default function CommentModal({type, updatePosts}) {
   const [open, setOpen] = useRecoilState(modalState);
-  const [post, setPost] = useState({}) as any;
+  const [post, setPost] = useState<Post | null>(null);
   const [postId] = useRecoilState(postIdState);
 
   // fetch the post
   useEffect(() => {
     async function fetchPost() {
       // resets the post state
-      setPost({});
+      setPost(null);
       try {
         const res = await axios.get(
           `${backendUrl}/posts/${postId}`
@@ -45,7 +45,8 @@ export default function CommentModal({type, updatePosts}) {
           <div
             data-testid="comment-modal"
             role="dialog"
-            className="max-w-[512px] overflow-auto">
+            className="max-w-[600px] overflow-y-auto"
+          >
             <div className="py-3">
               <span
                 onClick={() => setOpen(false)}
@@ -55,41 +56,45 @@ export default function CommentModal({type, updatePosts}) {
               </span>
             </div>
 
-            { type && !post?._id && (
-                <Input
+            {type && !post?._id && (
+              <Input
                 text={""}
                 setCommentModalState={setOpen}
                 updatePosts={updatePosts}
-                style={"flex w-full min-h-[50px] max-h-[100px] text-[15px] dark:bg-darkBg dark:text-darkText"}
-                phoneInputModal={undefined} id={undefined}              />
-            )
-            }
-
+                style={
+                  "flex w-full min-h-[50px] max-h-[100px] text-[15px] dark:bg-darkBg dark:text-darkText"
+                }
+                phoneInputModal={undefined}
+                id={undefined}
+              />
+            )}
 
             {post?._id ? (
               <>
                 <div
                   data-testid="comment-modal-post"
-                  className="flex p-3 mt-2 justify-start space-x-3 relative">
+                  className="flex p-3 mt-2 justify-start space-x-3 relative"
+                >
                   <div className="flex">
                     <span className="w-0.5 h-[calc(100%-60px)] mt-4 z-0 absolute left-8 top-11 bg-gray-300 dark:bg-darkBorderColor " />
                     <Image
                       height={40}
                       width={40}
+                      referrerPolicy="no-referrer"
                       className="h-11 z-20 w-11 rounded-full mr-3"
-                      src={post?.userImg}
+                      src={post?.userImg || "/default-user-img.jpg"}
                       alt="post-img"
                     />
                     <div className="flex-1 max-h-[calc(90vw - 200px)] pr-3 sm:pr-0 max-w-[calc(80vw-80px)]">
-                      <div className="flex items-center space-x-1 ">
-                        <h4 className="font-bold text-[15px] truncate sm:text-[16px] dark:text-darkText">
+                      <div className="flex flex-shrink text-clip justify-between items-center break-words overflow-hidden whitespace-nowrap space-x-1 ">
+                        <h4 className="font-bold text-[15px] overflow-hidden text-clip max-w-[300px]  sm:text-[16px] dark:text-darkText">
                           {post.name}
                         </h4>
-                        <span className="text-sm sm:text-[15px]  truncate hover:underline dark:text-gray-400">
+                        <span className="text-sm sm:text-[15px] hover:underline dark:text-gray-400">
                           @{post?.username} ·{" "}
                         </span>
-                        <span className="text-sm sm:text-[15px]  truncate text-gray-500">
-                          <Moment fromNow>{post?.timestamp?.toDate()}</Moment>
+                        <span className="text-sm sm:text-[15px]  text-gray-500">
+                          <Moment fromNow>{post?.createdAt}</Moment>
                         </span>
                       </div>
 
@@ -102,6 +107,7 @@ export default function CommentModal({type, updatePosts}) {
 
                         {post?.url && !post?.url?.includes("youtube") && (
                           <Image
+                            referrerPolicy="no-referrer"
                             className="object-cover z-50 w-full max-h-[300px] sm:max-h-none sm:h-[300px] rounded-xl cursor-pointer"
                             src={post?.url}
                             alt="post-img"
@@ -131,7 +137,7 @@ export default function CommentModal({type, updatePosts}) {
                 </div>
 
                 <div className="flex p-3 space-x-3 overflow-auto">
-                    <div className="flex-1 ">
+                  <div className="flex-1 ">
                     <Input
                       text={"Post your reply"}
                       id={postId}
@@ -141,8 +147,8 @@ export default function CommentModal({type, updatePosts}) {
                         "flex w-full min-h-[50px] text-[15px] z-0 dark:bg-darkBg dark:text-darkText"
                       }
                       phoneInputModal={undefined}
-                      />
-                    </div>
+                    />
+                  </div>
                 </div>
               </>
             ) : (

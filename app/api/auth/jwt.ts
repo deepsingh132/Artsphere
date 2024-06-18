@@ -1,6 +1,7 @@
+import { UUID } from "crypto";
 import jwt from "jsonwebtoken";
 
-const SignToken = async (data: { email: any; _id: any }) => {
+const SignToken = async (data: { email: string; _id: string }) => {
   const token = await jwt.sign(
     {
       email: data?.email,
@@ -8,7 +9,7 @@ const SignToken = async (data: { email: any; _id: any }) => {
     },
     process.env.JWT_SECRET,
     { expiresIn: "10d" }
-  );
+  ) as string;
   return token;
 };
 

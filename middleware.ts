@@ -16,6 +16,7 @@ const decodeJWT = async (token: string) => {
 async function checkAuth(request: Request) {
   const response = NextResponse.next();
   const bearer = request.headers.get("Authorization");
+
   if (!bearer) {
     return NextResponse.json({ message: "Not authorized" }, { status: 401 });
   }
@@ -83,6 +84,12 @@ export async function middleware(request: Request) {
     request.url.includes("/comment") &&
     (request.method === "PUT" || request.method === "DELETE")
   ) {
+    return checkAuth(request);
+  }
+  if (request.url.includes("/user") && request.method === "PUT") {
+    return checkAuth(request);
+  }
+  if (request.url.includes("/full")) {
     return checkAuth(request);
   }
   return response;

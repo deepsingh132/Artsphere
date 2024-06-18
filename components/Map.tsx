@@ -11,8 +11,9 @@ import usePlacesAutocomplete, {
   getLatLng,
 } from "use-places-autocomplete";
 
+import { classNames } from "primereact/utils";
 import { AutoComplete } from "primereact/autocomplete";
-import "./maps.css";
+import  "./maps.css";
 import { MapPinIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import moment from "moment";
@@ -58,9 +59,10 @@ function Map({ isLoaded, currentEvent, accessToken}) {
 
   return (
     <div className="w-full h-[40vh] md:h-[calc(100vh-80px)]">
-      <div className="flex items-center justify-center absolute top-2 left-1/2 bg-white rounded-lg md:p-4 p-2 shadow-md md:mx-auto -translate-x-1/2 w-[90%] md:w-fit z-[9999]">
-        <span className="text-gray-400 border border-lightBorderColor dark:border-darkBorderColor rounded-md p-2 ">
-          <MapPinIcon className="h-6 w-6 m-0 text-gray-400" />
+      <div
+        className="flex items-center  justify-center absolute top-2 left-1/2 bg-white rounded-lg md:p-4 p-2 shadow-md md:mx-auto -translate-x-1/2 w-[90%] md:w-fit z-[9999]">
+        <span className="text-gray-400 border border-lightBorderColor dark:border-gray-300 rounded-md p-2 ">
+          <MapPinIcon className="h-6 left-0 w-6 m-0 text-gray-400" />
         </span>
         <PlacesAutocomplete setSelected={setSelected} />
       </div>
@@ -194,11 +196,32 @@ const PlacesAutocomplete = ({ setSelected }) => {
     setSelected({ lat, lng });
   };
 
+  useEffect(() => {
+
+    /**
+     * NOTE: Workaround for the issue with the p-autocomplete-item text color
+     * TODO: Remove this workaround once the styles are separately available or created in tailwind.config.js
+     */
+
+    if(!document) return;
+
+    // change the text color of the p-autocomplete-item to black
+    const style = document.createElement("style");
+    style.innerHTML = `
+      .p-autocomplete-item {
+        color: black;
+      }
+    `;
+    document.head.appendChild(style);
+
+  }, []);
+
   return (
     <>
       {ready && (
         <>
           <AutoComplete
+            id="map-autocomplete"
             value={value}
             suggestions={
               status === "OK" && data
@@ -210,8 +233,31 @@ const PlacesAutocomplete = ({ setSelected }) => {
             completeMethod={() => {}} // an empty function is required in this case
             field="name"
             disabled={!ready}
+            inputClassName="w-full !bg-white !relative !border-none"
+            panelStyle={{
+              width: "auto",
+              backgroundColor: "white",
+              color: "!black",
+              zIndex: 9999,
+              boxShadow: "0px 0px 5px 0px rgba(0, 0, 0, 0.2)",
+              borderRadius: "6px",
+              marginTop: "-4px",
+              padding: "1rem",
+            }}
+            inputStyle={{
+              width: "300px",
+              color: "black",
+              paddingLeft: "1rem",
+              position: "relative",
+              borderRadius: "6px",
+            }}
+            style={{ width: "100%", color: "black"}}
             onSelect={(e) => handleSelect(e.value?.name)}
-            className="w-full !rounded-xl"
+            className={classNames(
+              "!w-full !border-gray-400 !rounded-md  !relative p-0",
+              "!bg-white"
+            )}
+            // className="w-full !rounded-xl"
             placeholder="Enter a city"
             onChange={(e) => setValue(e.target.value, true)}
           />

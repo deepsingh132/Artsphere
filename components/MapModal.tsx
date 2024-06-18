@@ -8,7 +8,7 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { toastError, toastSuccess } from "./Toast";
 import { backendUrl } from "@/app/utils/config/backendUrl";
 
-export default function MapModal({ event, closeModal, user}) {
+export default function MapModal({ event, closeModal, user} : { event: any; closeModal: any; user: User }) {
   const [liveBtnClicked, setLiveBtnClicked] = useState(false);
   const [secureToken, setSecureToken] = useState("");
   const [revealToken, setRevealToken] = useState(false);
@@ -97,6 +97,7 @@ export default function MapModal({ event, closeModal, user}) {
           <div className="modalLeft md:px-4 dark:bg-darkCard overflow-y-scroll dark:border-gray-700 border border-r py-6 mx-auto border-gray-300 fixed hidden md:flex flex-col p-2 justify-start items-start w-[40%] lg:w-[25%] h-full">
             <Image
               src={event?.image}
+              referrerPolicy="no-referrer"
               width={200}
               height={200}
               objectFit="cover"
@@ -183,6 +184,7 @@ export default function MapModal({ event, closeModal, user}) {
             <div className="eventInfoContainer dark:text-darkText md:mt-12 mt-4 flex flex-col h-full flex-grow justify-start items-center w-full">
               <Image
                 src={event?.image}
+                referrerPolicy="no-referrer"
                 width={1080}
                 height={1920}
                 objectFit="cover"
@@ -196,7 +198,7 @@ export default function MapModal({ event, closeModal, user}) {
               <p className="text-ls font-semibold">
                 Attendees:{" "}
                 {event?.attendees
-                  ?.map((attendee: { userId: any; }) => attendee?.userId)
+                  ?.map((attendee: { userId: any }) => attendee?.userId)
                   .join(", ") || "None"}
               </p>
               <p className="text-xl font-semibold">{event?.likes}</p>
@@ -210,6 +212,7 @@ export default function MapModal({ event, closeModal, user}) {
             <div className="mobileEventInfoContainer p-4 dark:bg-darkCard h-full dark:text-darkText overflow-hidden overflow-y-auto md:mt-12 md:hidden flex flex-col justify-start items-center w-full">
               <Image
                 src={event?.image}
+                referrerPolicy="no-referrer"
                 width={1000}
                 height={1000}
                 unoptimized={true}
@@ -217,18 +220,20 @@ export default function MapModal({ event, closeModal, user}) {
                 className="w-[300px] max-w-xs object-cover mt-4  md:hidden rounded-lg "
                 alt="event image"
               />
-              <h1 className="md:hidden text-xl mt-4 font-bold">{event?.title}</h1>
+              <h1 className="md:hidden text-xl mt-4 font-bold">
+                {event?.title}
+              </h1>
               <p className="md:hidden text-base mt-4 font-normal">
                 {event?.description}
               </p>
               <p className="md:hidden text-lg font-semibold">{event?.host}</p>
               <p className="md:hidden text-ls font-semibold">
-                {
-                  event?.attendees?.length > 0 ?
-                    "Attendees: " +
-                    event?.attendees.map((attendee: { userId: any; }) => attendee?.userId).join(", ")
-                    :"No Attendees"
-                  }
+                {event?.attendees?.length > 0
+                  ? "Attendees: " +
+                    event?.attendees
+                      .map((attendee: { userId: any }) => attendee?.userId)
+                      .join(", ")
+                  : "No Attendees"}
               </p>
               <p className="md:hidden text-xl font-semibold">{event?.likes}</p>
               <p className="md:hidden text-xl font-semibold">{event?.tags}</p>

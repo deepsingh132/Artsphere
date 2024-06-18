@@ -19,12 +19,13 @@ import nullImg from "@/public/null.png";
 import axios from "axios";
 import {toastSuccess, toastError} from "./Toast";
 import { backendUrl } from "@/app/utils/config/backendUrl";
+import useSWR from "swr";
 
 export default function UserProfileData({}) {
   const pathname = usePathname();
   const username = pathname.split("/")[1];
   const [isFetching, setIsFetching] = useState(true);
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [likedPosts, setLikedPosts] = useState([]);
   const [likes, setLikes] = useState([]);
   const [tab, setTab] = useState("showcase");
@@ -33,6 +34,22 @@ export default function UserProfileData({}) {
   const [isVerified, setIsVerified] = useState(false);
 
   const [profileData, setProfileData] = useState(null) as any;
+
+  // fetcher function for useSWR
+  const fetcher = (url: RequestInfo | URL) =>
+    fetch(url).then((res) => {
+      if (!res.ok) {
+        toastError("Error loading posts", undefined);
+      }
+      return res.json();
+    });
+
+  const key = `${backendUrl}/posts/username/${username}`;
+  const { data, error, isLoading, mutate } = useSWR(key, fetcher, {
+    // refreshInterval: 30000,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: true,
+  });
 
   useEffect(() => {
     const checkFollowing = () => {
@@ -51,6 +68,8 @@ export default function UserProfileData({}) {
     const checkVerification = () => {
       if (profileData?.user?.verified) {
         setIsVerified(true);
+      } else {
+        setIsVerified(false);
       }
     };
     if (profileData && session?.user?.id) {
@@ -60,21 +79,18 @@ export default function UserProfileData({}) {
 
   useEffect(() => {
     async function getProfileData() {
-     try {
-       const res = await fetch(
-         `${backendUrl}/user/${username}`
-       );
-       const data = await res.json();
-       if (data.message === "User not found") {
-         setIsFetching(false);
-         return;
-       }
-       setProfileData(data);
-       setLikes(data?.user?.likes);
-       setIsFetching(false);
-     }
-     catch (error) {
-       setIsFetching(false);
+      try {
+        const res = await fetch(`${backendUrl}/user/${username}`);
+        const data = await res.json();
+        if (data.message === "User not found") {
+          setIsFetching(false);
+          return;
+        }
+        setProfileData(data);
+        setLikes(data?.user?.likes);
+        setIsFetching(false);
+      } catch (error) {
+        setIsFetching(false);
         toastError(error.message, undefined);
       }
     }
@@ -82,24 +98,17 @@ export default function UserProfileData({}) {
   }, [username]);
 
   useEffect(() => {
-    //get all posts
-    async function getPosts() {
-      try {
-        const res = await fetch(
-          `${backendUrl}/posts/username/${username}`
-        );
-        const data = await res.json();
-        if (data.message === "No posts found") {
-          toastError("No posts found", undefined);
-          return;
-        }
-        setPosts(data.posts);
-      } catch (error) {
-
-      }
+    if (data) {
+      setPosts(data.posts);
     }
-    getPosts();
-  }, [likes, username]);
+    if (data?.message === "No posts found") {
+      toastError("No posts found", undefined);
+    }
+
+    if (error) {
+      toastError("Error loading posts", undefined);
+    }
+  }, [data, error]);
 
   useEffect(() => {
     // get all liked posts's data with the ids from likes array
@@ -109,9 +118,7 @@ export default function UserProfileData({}) {
 
         // Iterate through the liked post IDs and fetch each post's data
         for (const postId of likes) {
-          const res = await fetch(
-            `${backendUrl}/posts/${postId}`
-          );
+          const res = await fetch(`${backendUrl}/posts/${postId}`);
           if (res.status === 404) {
             continue;
           }
@@ -132,7 +139,7 @@ export default function UserProfileData({}) {
     }
   }, [profileData, likes, username, tab]);
 
-  if (!isFetching) {
+  if (!isFetching && !profileData) {
     document.body.style.overflow = "auto";
   }
 
@@ -144,6 +151,7 @@ export default function UserProfileData({}) {
         <Navbar title="Back" />
         <div className="flex flex-col w-full items-center justify-center h-screen">
           <Image
+            referrerPolicy="no-referrer"
             src={nullImg}
             alt="404"
             width={500}
@@ -187,6 +195,10 @@ export default function UserProfileData({}) {
       );
       if (res.status === 200) {
         toastSuccess("Verification request sent!", undefined);
+        // add delay and verify the user
+        setTimeout(() => {
+          setIsVerified(true);
+        }, 3000);
       }
     } catch (error) {
       toastError(error.message, undefined);
@@ -200,7 +212,7 @@ export default function UserProfileData({}) {
     );
   }
 
-  async function followUser() {
+ async function followUser() {
     if (!session) {
       alert("You must be logged in to follow a user!");
       return;
@@ -226,6 +238,7 @@ export default function UserProfileData({}) {
       `${backendUrl}/user/${username}/follow`,
       {
         action: "follow",
+        userId: session?.user?.id,
         followFrom: session?.user?.id,
         followTo: profileData?.user?._id,
       },
@@ -249,17 +262,60 @@ export default function UserProfileData({}) {
     }
   }
 
+  function updatePosts(operation: string, newPost: any, id: any) {
+    // an update function to update the feed optimistically
+    if (operation === "delete") {
+      mutate(
+        (data: { posts: any[] }) => ({
+          posts: data.posts.filter((post: { _id: any }) => post._id !== id),
+        }),
+        {
+          revalidate: false,
+          rollbackOnError: true,
+        }
+      );
+    }
+    if (operation === "update" || operation === "add") {
+      mutate(
+        {
+          posts: [newPost, ...data?.posts],
+        },
+        {
+          revalidate: false,
+          rollbackOnError: true,
+        }
+      );
+    }
+    if (operation === "reply") {
+      mutate(
+        {
+          posts: data?.posts.map((post: any) => {
+            if (post._id === id) {
+              post.comments?.push(newPost);
+            }
+            return post;
+          }),
+        },
+        {
+          revalidate: false,
+          rollbackOnError: true,
+        }
+      );
+    }
+  }
+
   return isFetching ? (
     <Spinner />
   ) : (
     <div>
-      {profileData === null && !isFetching ? (
+      {profileData === null && !isLoading ? (
         userNotFound()
       ) : (
         <>
           <Navbar title={profileData?.user.name} />
           <div className="coverPhoto flex max-w-full">
             <Image
+              referrerPolicy="no-referrer"
               width={768}
               height={276}
               alt="cover"
@@ -272,6 +328,7 @@ export default function UserProfileData({}) {
           </div>
           <div className=" profilePhoto flex justify-start px-4 -mt-16">
             <Image
+              referrerPolicy="no-referrer"
               width="128"
               height="128"
               alt="profile"
@@ -329,7 +386,7 @@ export default function UserProfileData({}) {
                     </div>
                   )}
 
-                {profileData?.user?.verified && (
+                {isVerified && (
                   // Verified Badge with a yellow gradient bg-gradient-to-l from-yellow-200 via-yellow-400 to-yellow-700
                   <CheckBadgeIcon className="h-6 w-6 ml-1 text-primary" />
                 )}
@@ -380,7 +437,7 @@ export default function UserProfileData({}) {
               </div>
             </div>
           </div>
-          <div className="profileTabs flex flex-col items-center mt-8 pt-4">
+          <div className="profileTabs flex flex-col items-center mt-1 pt-4">
             <div className="tabs font-semibold flex w-full justify-evenly dark:text-darkText">
               <div
                 onClick={() => setTab("showcase")}
@@ -404,7 +461,13 @@ export default function UserProfileData({}) {
                 Likes
               </div>
             </div>
-            <div className="flex flex-col w-full justify-center mt-4 border-t">
+            <div className="flex flex-col w-full justify-center mt-2 border-t">
+              {isLoading && (
+                <div className="flex h-full justify-center items-center pt-8">
+                  <Spinner />
+                </div>
+              )}
+
               {tab === "showcase" && (
                 <AnimatePresence>
                   {posts
@@ -426,14 +489,15 @@ export default function UserProfileData({}) {
                           key={post._id}
                           id={post._id}
                           post={post}
-                          updatePosts={null}
+                          updatePosts={updatePosts}
                         />
                       </motion.div>
                     ))}
-                  {posts?.length === 0 && (
+                  {posts?.length === 0 && !isLoading && (
                     <div className="flex sm:h-[80vh] flex-col lg:p-28 items-center justify-center mt-8">
                       <Image
                         src={nullImg}
+                        referrerPolicy="no-referrer"
                         alt="404"
                         width="500"
                         height="500"
@@ -470,7 +534,7 @@ export default function UserProfileData({}) {
                           key={post._id}
                           id={post._id}
                           post={post}
-                          updatePosts={null}
+                          updatePosts={updatePosts}
                         />
                       </motion.div>
                     ))}
@@ -479,6 +543,7 @@ export default function UserProfileData({}) {
                     <div className="flex flex-col lg:p-28 items-center justify-center mt-8">
                       <Image
                         src={nullImg}
+                        referrerPolicy="no-referrer"
                         alt="404"
                         width={500}
                         height={500}

@@ -13,6 +13,7 @@ export default function ChatBubble({ user, message, timestamp }) {
         <Image
           width="50"
           height="50"
+          referrerPolicy="no-referrer"
           alt="profile picture"
           src="https://images.pexels.com/photos/16177320/pexels-photo-16177320/free-photo-of-light-vacation-people-festival.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
           className=" w-max rounded-full object-cover"

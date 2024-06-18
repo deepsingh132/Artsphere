@@ -29,6 +29,7 @@ export default function Sidebar({}) {
         className="hoverEffect flex justify-center content-center align-middle p-2 hover:bg-orange-100 xl:px-2"
       >
         <Image
+          referrerPolicy="no-referrer"
           width={50}
           alt="logo"
           height={50}
@@ -44,7 +45,11 @@ export default function Sidebar({}) {
       {/* Menu */}
 
       <div className="mt-4 mb-2.5 xl:items-start">
-        <SidebarMenu username={session?.user?.email?.split("@")[0]} nav={undefined} toggleNavbar={undefined} />
+        <SidebarMenu
+          username={session?.user?.email?.split("@")[0]}
+          nav={undefined}
+          toggleNavbar={undefined}
+        />
         {/* <SidebarMenuItem text="More" Icon={EllipsisHorizontalCircleIcon} /> */}
         {/* </>
         )} */}
@@ -55,25 +60,27 @@ export default function Sidebar({}) {
       {currentUser ? (
         <>
           <button
-            onClick={() =>
-              setIsOpen(true)
-            }
-            className="bg-primary text-text  rounded-full w-56 h-12 font-bold shadow-md hover:brightness-95 text-lg hidden xl:inline">
+            onClick={() => setIsOpen(true)}
+            className="bg-primary text-text  rounded-full w-56 h-12 font-bold shadow-md hover:brightness-95 text-lg hidden xl:inline"
+          >
             Express
           </button>
           <div
             data-testid="user-info"
-            className="hoverEffect text-gray-700 flex items-center justify-center xl:justify-start my-auto">
+            className="hoverEffect text-gray-700 flex items-center justify-center xl:justify-start my-auto"
+          >
             <Image
+              referrerPolicy="no-referrer"
               width="50"
               height="50"
               src={currentUser?.image}
-
               alt="user-img"
               className="h-10 w-10 rounded-full xl:mr-2"
             />
-            <div className="leading-5 hidden xl:inline">
-              <h4 className="font-bold dark:text-darkText">{currentUser?.name}</h4>
+            <div className="leading-5 whitespace-nowrap line-clamp-1 max-w-[180px] hidden xl:inline">
+              <h4 className="font-bold dark:text-darkText">
+                {currentUser?.name}
+              </h4>
               <p className="text-gray-500">
                 @{currentUser.email.split("@")[0]}
               </p>

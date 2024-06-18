@@ -64,6 +64,7 @@ export default function Navbar({ title }) {
             >
               <Image
                 src={session?.user?.image as string}
+                referrerPolicy="no-referrer"
                 width={40}
                 height={40}
                 alt=""
@@ -116,9 +117,11 @@ export default function Navbar({ title }) {
             {status === "authenticated" && (
               <div
                 data-testid="profile-container"
-                className="flex flex-col w-full justify-start p-4">
+                className="flex flex-col w-full justify-start p-4"
+              >
                 <Image
                   src={session?.user?.image as string}
+                  referrerPolicy="no-referrer"
                   width={40}
                   height={40}
                   alt=""

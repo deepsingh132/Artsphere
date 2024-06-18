@@ -1,78 +1,44 @@
-import mongoose, { Schema } from "mongoose";
+import { pgTable, uuid, text, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
+// import jsonb from "@/@types/jsonb";
+import { users } from "./User";
+import { UUID } from "crypto";
 
-const PostSchema: Schema = new Schema(
-  {
-    content: {
-      type: String,
-      required: false,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    username: {
-      type: String,
-      required: true,
-    },
-    authorID: {
-      type: String,
-      required: true,
-    },
-    category: {
-      type: String,
-      enum: [
-        "art",
-        "music",
-        "hybrid",
-        "theatre",
-        "literature",
-        "science",
-        "sports",
-        "other",
-      ],
-      default: "other",
-      required: true,
-    },
-    tags: {
-      type: [String],
-      required: false,
-    },
-    image: {
-      type: String,
-      required: false,
-    },
-    featured: {
-      type: Boolean,
-      default: false,
-    },
-    likes: {
-      type: [String],
-      default: [],
-      required: false,
-    },
-    comments: [
-      {
-        userId: String,
-        content: String,
-        username: String,
-        timestamp: String,
-        userImg: String,
-        url: String,
-        name: String,
-      },
-    ],
-    userImg: {
-      type: String,
-      required: false,
-      default:
-        "https://alumni.engineering.utoronto.ca/files/2022/05/Avatar-Placeholder-400x400-1.jpg",
-    },
-    url: {
-      type: String,
-      required: false,
-    },
-  },
-  { timestamps: true }
-);
+export type PostType = {
+  _id: string;
+  likes: string[] | null;
+  content: string | null;
+  authorID: string;
+  category: string | null;
+  featured: boolean | null;
+  comments: unknown[] | null;
+  url: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+};
 
-export default mongoose.models.Post || mongoose.model("Post", PostSchema);
+// Define the comment type
+export interface CommentType {
+  _id: UUID;
+  userId: UUID;
+  content: string;
+  username: string;
+  timestamp: Date;
+  url: string;
+  userImg: string;
+  name: string;
+}
+
+export const posts = pgTable("posts", {
+  _id: uuid("_id").defaultRandom().primaryKey(),
+  content: text("content").default(""),
+  authorID: uuid("authorID").notNull().references(() => users._id),
+  category: text("category").default("other"),
+  featured: boolean("featured").default(false),
+  likes: uuid("likes").array().default([]),
+  comments: jsonb("comments").array().default([]),
+  url: text("url").default(""),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow(),
+});
+
+export type Post = typeof posts;

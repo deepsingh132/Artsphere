@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export default function Trending({ post }) {
+export default function Trending({ post } : {post: Post}) {
   // open in same tab
   return (
     <a
@@ -24,7 +24,9 @@ export default function Trending({ post }) {
           <h6 className="text-sm font-bold dark:text-darkText">
             {post?.content}
           </h6>
-          {post?.tags?.length > 0 && (
+          {
+            post?.tags &&
+            post?.tags?.length > 0 && (
             <p className="text-[13px] leading-4 font-medium text-gray-500 ">
               Trending in{" "}
               {post?.tags.map((tag, index) => (
@@ -33,7 +35,7 @@ export default function Trending({ post }) {
                   className="text-[13px] font-normal hover:underline text-primary whitespace-pre-wrap"
                 >
                   #{tag}
-                  {index !== post?.tags?.length - 1 && (
+                  {index !== (post?.tags && post?.tags?.length - 1) && (
                     <span className="text-xs font-medium text-gray-500 ">
                       ,{" "}
                     </span>
@@ -48,6 +50,7 @@ export default function Trending({ post }) {
           // if post has a youtube url then show the video thumbnail
           post?.url?.includes("youtube") && (
             <Image
+              referrerPolicy="no-referrer"
               className="rounded-xl "
               height={70}
               width={70}
@@ -63,6 +66,7 @@ export default function Trending({ post }) {
 
         {post?.url && !post?.url?.includes("youtube") && (
           <Image
+            referrerPolicy="no-referrer"
             className="rounded sm:w-[80px] sm:h-[50px] object-cover"
             height={70}
             width={70}

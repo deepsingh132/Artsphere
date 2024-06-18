@@ -4,10 +4,11 @@ import Widgets from "@/components/Widgets";
 import CreateEventLayout from "@/components/createEventLayout";
 import EventsLayout from "@/components/EventsLayout";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/authOptions";
 import Login from "../login/page";
 import PostModal from "@/components/PostModal";
 import { backendUrl } from "../utils/config/backendUrl";
+import { Session } from "next-auth/core/types";
 
 export default async function Event({}) {
 
@@ -53,7 +54,7 @@ export default async function Event({}) {
     </main>
   );
 
-  async function getEvents(session: any) {
+  async function getEvents(session: Session | null) {
 
     if (!backendUrl || backendUrl === "undefined") {
       return {

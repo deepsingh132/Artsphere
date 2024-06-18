@@ -23,7 +23,7 @@ import { toastError, toastSuccess } from "./Toast";
 import { backendUrl } from "@/app/utils/config/backendUrl";
 import { deleteComment } from "@/app/utils/postUtils";
 
-export default function Comment({ comment, commentId, originalPostId, updatePosts }) {
+export default function Comment({ comment, commentId, originalPostId, updatePosts } : {comment: CommentType, commentId: string, originalPostId: string, updatePosts: any}) {
   const [likes, setLikes] = useState([]);
   const [hasLiked, setHasLiked] = useState(false);
   const [open, setOpen] = useState(false);
@@ -45,9 +45,9 @@ export default function Comment({ comment, commentId, originalPostId, updatePost
     }
   }, [session?.user, status]);
 
-  useEffect(() => {
-    setLikes(comment?.likes);
-  }, [comment]);
+  // useEffect(() => {
+  //   setLikes(comment?.likes);
+  // }, [comment]);
 
 
   const likeComment = async () => {
@@ -78,7 +78,7 @@ export default function Comment({ comment, commentId, originalPostId, updatePost
 
   const deleteCommentFunc = async () => {
     updatePosts("delete", null, commentId); // optimistic update
-    const res = await deleteComment(commentId, session?.user?.accessToken);
+    const res = await deleteComment(originalPostId, commentId, session?.user?.accessToken);
     if (!res) {
       toastError("Error deleting comment", undefined);
       updatePosts("add", comment, commentId); // rollback
@@ -94,6 +94,7 @@ export default function Comment({ comment, commentId, originalPostId, updatePost
       <Image
         height={40}
         width={40}
+        referrerPolicy="no-referrer"
         className="h-11 w-11 rounded-full mr-4"
         src={comment?.userImg}
         alt="user-img"
@@ -139,6 +140,7 @@ export default function Comment({ comment, commentId, originalPostId, updatePost
         {comment?.url && !comment?.url?.includes("youtube") && (
           <Image
             className="rounded-2xl max-h-80 w-[100%] sm:w-full object-cover"
+            referrerPolicy="no-referrer"
             width={500}
             height={500}
             src={comment?.url}

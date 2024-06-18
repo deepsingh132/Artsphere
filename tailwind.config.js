@@ -10,6 +10,10 @@ module.exports = {
       roboto: ["Roboto", "sans-serif"],
     },
     extend: {
+      transitionProperty: {
+        'width': 'width',
+      },
+
       colors: {
         primary: "#f8b591",
         secondary: "#faeeae",
