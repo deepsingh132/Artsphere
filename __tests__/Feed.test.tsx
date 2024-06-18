@@ -13,6 +13,13 @@ import { SWRConfig } from "swr";
 import { server } from "@/__mocks__/server";
 import { HttpResponse, http } from "msw";
 import { backendUrl } from "@/app/utils/config/backendUrl";
+import crypto from "crypto";
+
+Object.defineProperty(global, "crypto", {
+  value: {
+    randomUUID: () => crypto.randomUUID(),
+  },
+});
 
 global.confirm = jest.fn(() => true); // mock window.confirm
 

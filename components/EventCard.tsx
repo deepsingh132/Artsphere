@@ -31,6 +31,7 @@ export default function EventCard({ event, user, email }) {
     <div className="eventCard cursor-pointer mx-auto my-4 md:w-[300px] w-[250px] flex flex-col justify-center items-center rounded-2xl shadow-md hover:shadow-lg">
       <div className="eventCardImage w-full h-full relative">
         <Image
+          referrerPolicy="no-referrer"
           src={event?.image}
           width={200}
           height={150}

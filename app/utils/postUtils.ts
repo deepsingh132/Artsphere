@@ -104,6 +104,7 @@ export const likePost = async (
 };
 
 export const deleteComment = async (
+  originalPostId: string | undefined,
   commentId: string | undefined,
   accessToken: string | undefined
 ) => {
@@ -111,11 +112,13 @@ export const deleteComment = async (
     return;
   }
   try {
-    const res = await fetch(`${backendUrl}/posts/${commentId}/comment`, {
+    const res = await fetch(`${backendUrl}/posts/${commentId}/comment`,
+      {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${accessToken}`,
-      },
+        },
+      body: JSON.stringify({ postId: originalPostId }),  
     });
     const data = await res.json();
     if (data?.message === "Comment deleted" || res?.status === 200) {

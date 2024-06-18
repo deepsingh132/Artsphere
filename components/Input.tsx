@@ -16,7 +16,6 @@ import { Modal } from "./modal";
 import Spinner from "./Spinner";
 import { toastError, toastSuccess } from "./Toast";
 import toast from "react-hot-toast";
-import ObjectId from "@/app/utils/ObjectId";
 import { addComment, addPost } from "@/app/utils/postUtils";
 
 export default function Input({
@@ -198,7 +197,7 @@ export default function Input({
     const sanitizedUrl = sanitize(mediaUrl?.trim());
 
     const reply = {
-      _id: ObjectId(),
+      _id: crypto.randomUUID(),
       userId: session?.user?.id,
       content: sanitizedInput || "",
       username: session?.user?.email.split("@")[0],
@@ -259,7 +258,7 @@ export default function Input({
     const sanitizedUrl = sanitize(mediaUrl?.trim());
 
     const post = {
-      _id: ObjectId(),
+      _id: crypto.randomUUID(),
       username: session?.user?.email.split("@")[0] || "test",
       userImg: session?.user?.image || "",
       content: sanitizedInput || "",
@@ -341,6 +340,7 @@ export default function Input({
             }
           >
             <Image
+              referrerPolicy="no-referrer"
               data-testid="input-user-avatar"
               src={session?.user?.image as string}
               alt="user-img"
@@ -409,6 +409,7 @@ export default function Input({
                   </div>
                   {selectedFile ? (
                     <Image
+                      referrerPolicy="no-referrer"
                       height={1000}
                       width={1000}
                       alt="media"
@@ -477,8 +478,8 @@ export default function Input({
                       <Spinner />
                     </div>
                   ) : (
-                      <button
-                        data-testid="input-post-button"
+                    <button
+                      data-testid="input-post-button"
                       onClick={id ? sendReply : sendPost}
                       disabled={
                         (!input.trim() &&

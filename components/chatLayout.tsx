@@ -9,6 +9,7 @@ export default function ChatLayout({ userImg, username, msg, timestamp }) {
           <Image
             width="50"
             height="50"
+            referrerPolicy="no-referrer"
             alt="profile picture"
             loader={({ src }) => src}
             src={userImg}

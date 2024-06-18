@@ -5,7 +5,7 @@ import PostModal from "@/components/PostModal";
 import Image from "next/image";
 import moment from "moment";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/authOptions";
 import { BellIcon } from "@heroicons/react/24/outline";
 import { backendUrl } from "../utils/config/backendUrl";
 
@@ -89,6 +89,7 @@ export default async function Notifications({}) {
                       <Image
                         src={notification.userImg}
                         alt=""
+                        referrerPolicy="no-referrer"
                         className="rounded-full h-11 w-11 object-cover"
                         width={40}
                         height={40}

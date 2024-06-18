@@ -9,11 +9,27 @@ ArtSphere aims to bridge gaps in art and culture, creating an inclusive virtual 
 
 ## Table of Contents 📜
 
+- Tech Stack
 - Features
 - Getting Started
 - Contributing
 - License
 - Contact
+
+## Tech Stack 🛠️
+
+ArtSphere is built with cutting-edge technologies to provide a seamless and engaging user experience:
+
+- Next.js 14
+- TypeScript
+- Tailwind CSS
+- Supabase
+- PostgreSQL (Supabase)
+- Drizzle-ORM
+- NextAuth
+- JsonWebToken (JWT)
+- Recoil
+- SWR (Data Fetching)
 
 ## Features 🌟
 

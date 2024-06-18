@@ -1,12 +1,13 @@
-import { connectMongoDB } from "@/libs/mongodb";
-import User from "@/models/User";
+import { db } from "@/db";
+import { eq } from "drizzle-orm";
+import { users as User } from "@/models/User";
 import { NextResponse } from "next/server";
 
 export async function PUT(request: Request) {
   // get username from request params
   const username = request.url.split("/")[5];
-  await connectMongoDB();
-  const user = await User.findOne({ username });
+  const [user] = await db.select().from(User).where(eq(User.username, username));
+
   if (!user) {
     return NextResponse.json({ message: "User not found" }, { status: 404 });
   }
@@ -20,6 +21,6 @@ export async function PUT(request: Request) {
   }
 
   user.verified = true;
-  await user.save();
+  await db.update(User).set(user).where(eq(User.username, username));
   return NextResponse.json({ message: "User updated", user }, { status: 200 });
 }

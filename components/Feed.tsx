@@ -28,7 +28,7 @@ export default function Feed({ type }) {
 
 
 
-  const key = type ? `${backendUrl}/posts?type=${type}` : `${backendUrl}/posts`;
+  const key = type && type !=="for-you" ? `${backendUrl}/posts?type=${type}` : `${backendUrl}/posts`;
   const { data, error, isLoading, mutate } = useSWR(key, fetcher, {
     // refreshInterval: 30000,
     revalidateOnFocus: false,
@@ -141,15 +141,21 @@ export default function Feed({ type }) {
         data-testid="feed"
         role="feed"
         className="mainContent flex flex-col xl:ml-[350px] border-l border-r border-lightBorderColor dark:border-darkBorderColor w-screen sm:max-w-[calc(100vw-82px)] md:max-w-2xl xl:min-w-[680px] sm:ml-[82px] lg:max-w-[680px] flex-grow">
-        <Navbar title={undefined} />
-        <Input
-          updatePosts={updatePosts}
-          text={undefined}
-          id={undefined}
-          style={undefined}
-          phoneInputModal={undefined}
-          setCommentModalState={undefined}
-        />
+        { type === "for-you" ?
+          <Navbar title={"For-you"} />
+          : <Navbar title={undefined} />
+        }
+        {
+          type !== "for-you" &&
+          <Input
+            updatePosts={updatePosts}
+            text={undefined}
+            id={undefined}
+            style={undefined}
+            phoneInputModal={undefined}
+            setCommentModalState={undefined}
+          />
+        }
 
         {session && (
           // an absolute floating button to create a post on mobile
@@ -181,38 +187,67 @@ export default function Feed({ type }) {
             </>
           )
         )}
+        {
+          type === "for-you" ?
+          <AnimatePresence>
+            {data?.posts
+              ?.slice(0, 40)
+                .sort(
+                (
+                  a: { likes: any[] },
+                  b: { likes: any[] }
+                ) => b.likes.length - a.likes.length
+              )
+              .map((post: Post) => (
+                <motion.div
+                  key={post._id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1 }}
+                >
+                  <Post
+                    key={post?._id}
+                    id={post?._id || ""}
+                    post={post}
+                    updatePosts={updatePosts}
+                  />
+                </motion.div>
+              ))}
+          </AnimatePresence>
+          :
+          <AnimatePresence>
+            {data?.posts
+              ?.slice(0, 40)
+              .sort(
+                (
+                  a: { createdAt: string | number | Date },
+                  b: { createdAt: string | number | Date }
+                ) => {
+                  const dateA = new Date(a.createdAt) as any;
+                  const dateB = new Date(b.createdAt) as any;
+                  return dateB - dateA; // Sort in descending order
+                }
+              )
+              .map((post: Post) => (
+                <motion.div
+                  key={post._id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1 }}
+                >
+                  <Post
+                    key={post?._id}
+                    id={post?._id || ""}
+                    post={post}
+                    updatePosts={updatePosts}
+                  />
+                </motion.div>
+              ))}
+          </AnimatePresence>
 
-        <AnimatePresence>
-          {data?.posts
-            ?.slice(0, 40)
-            .sort(
-              (
-                a: { createdAt: string | number | Date },
-                b: { createdAt: string | number | Date }
-              ) => {
-                const dateA = new Date(a.createdAt) as any;
-                const dateB = new Date(b.createdAt) as any;
-                return dateB - dateA; // Sort in descending order
-              }
-            )
-            .map((post: { _id: Key | null | undefined }) => (
-              <motion.div
-                key={post._id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1 }}
-              >
-                <Post
-                  key={post?._id}
-                  id={post?._id}
-                  post={post}
-                  updatePosts={updatePosts}
-                />
-              </motion.div>
-            ))}
-        </AnimatePresence>
-
+        }
         {modalOpen && (
           <Modal closeModal={closeModal}>
             <div

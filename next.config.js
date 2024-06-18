@@ -10,6 +10,14 @@ const nextConfig = {
         hostname: 'images.unsplash.com'
       },
       {
+        protocol: 'http',
+        hostname: 'localhost'
+      },
+      {
+        protocol: 'https',
+        hostname: 'c.tenor.com'
+      },
+      {
         protocol: 'https',
         hostname: 'images.pexels.com',
       },

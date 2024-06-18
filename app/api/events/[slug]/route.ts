@@ -1,23 +1,22 @@
-import { connectMongoDB } from "@/libs/mongodb";
-import Events from "@/models/Events";
+import { db } from "@/db";
+import { eq, sql } from "drizzle-orm";
+import { events as Event } from "@/models/Events";
 import { NextResponse } from "next/server";
-import User from "@/models/User";
-import mongoose from "mongoose";
+import { users as User } from "@/models/User";
 import crypto from "crypto";
 
 // Public route
 // Get event by id
 export async function GET(request: Request) {
   const slug = request.url.split("/")[3];
-  await connectMongoDB();
-  const event = await Events.findOne({ slug });
+  const [event] = await db.select().from(Event).where(eq(Event._id, slug));
   if (!event) {
     return NextResponse.json({ message: "No event found" }, { status: 404 });
   }
   return NextResponse.json({ event }, { status: 200 });
 }
 
-function generateToken(length) {
+function generateToken(length: number) {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let token = "";
@@ -29,15 +28,17 @@ function generateToken(length) {
 }
 
 export async function POST(request: Request) {
-  await connectMongoDB();
-  const token = request.headers.get("Authorization");
-  if (!token) {
+  const username = request.url.split("/")[5];
+  const userId = request.headers.get("userId");
+
+  if (!userId) {
     return NextResponse.json({ message: "Not Authorized!" }, { status: 401 });
   }
 
-  const user = await User.findOne({ username: request.url.split("/")[5] });
-  if (!user) {
-    return NextResponse.json({ message: "No user found" }, { status: 404 });
+  const [user] = await db.select().from(User).where(eq(User.username, username));
+
+  if (!user || user._id !== userId) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 404 });
   }
 
   if (user.role !== "organizer") {
@@ -59,9 +60,10 @@ export async function POST(request: Request) {
       location,
       coordinates,
       attendees,
+      link
     } = data;
 
-    const organizerId = new mongoose.Types.ObjectId(userId);
+    const organizerId = user._id;
 
     if (!title || !date || !location || !userId) {
       return NextResponse.json(
@@ -70,7 +72,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const eventExists = await Events.findOne({ title });
+    if (userId !== user._id) {
+      return NextResponse.json(
+        { message: "User not authorized to create event" },
+        { status: 401 }
+      );
+    }
+
+    // Check if event already exists by title
+    const [eventExists] = await db.select().from(Event).where(eq(Event.title, title));
     if (eventExists) {
       return NextResponse.json(
         { message: "Event already exists" },
@@ -79,17 +89,26 @@ export async function POST(request: Request) {
     }
 
     const token = generateToken(10);
-    const event = await Events.create({
+
+    // remove quotes from coordinates
+    if (coordinates) {
+      coordinates.lat = parseFloat(coordinates?.lat) || 0;
+      coordinates.lng = parseFloat(coordinates?.lng) || 0;
+    }
+
+    const [event] = await db.insert(Event).values({
       title,
       description,
       image,
       date,
       location,
-      coordinates,
+      token,
+      link,
+      coordinates: coordinates || { lat: 0, lng: 0 },
       organizer: organizerId,
       attendees,
-      token,
-    });
+    }).returning();
+
     return NextResponse.json({ event }, { status: 200 });
   } catch (error) {
     console.error("Error creating event: ", error);

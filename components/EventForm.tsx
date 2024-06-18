@@ -66,20 +66,13 @@ export default function EventForm({ closeModal }) {
     } catch (error) {
       setLoading(false);
       toastError("Error uploading image", undefined);
-      return null;
+      return '';
     }
   };
 
+
   const createEvent = async () => {
     try {
-      if (file) {
-        const res = await uploadImage();
-        // return if image upload failed
-        if (!res) {
-          toastError("Something went wrong! , please try again later", undefined);
-          return;
-        }
-    }
       const newEvent = {
         title: eventTitle,
         description: eventDescription,
@@ -87,7 +80,7 @@ export default function EventForm({ closeModal }) {
         date: eventDate,
         time: eventTime,
         userId: session?.user?.id,
-        image: eventImage || "",
+        image: file ? await uploadImage() : eventImage,
         coordinates: {
           lat: lat,
           lng: lng,

@@ -12,7 +12,7 @@ import useSWR from "swr";
 import { backendUrl } from "@/app/utils/config/backendUrl";
 import { toastError } from "./Toast";
 
-export default function SinglePost({ id }) {
+export default function SinglePost({ id } : {id: string}) {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const { status, data: session } = useSession();
@@ -25,7 +25,9 @@ export default function SinglePost({ id }) {
       return res.json();
     });
 
-  const { data, error, isLoading, mutate } = useSWR( status === "authenticated" ? `${backendUrl}/posts/${id}` : null, fetcher,
+  const { data, error, isLoading, mutate } = useSWR(
+    status === "authenticated" ? `${backendUrl}/posts/${id}` : null,
+    fetcher,
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: true,
@@ -88,11 +90,18 @@ export default function SinglePost({ id }) {
   };
 
   // if post is deleted or doesn't exist
-  if (error && !isLoading && !isFetching) {
+  if (
+    (error && !isLoading && !isFetching) ||
+    (data && data?.message === "Invalid post ID" || data?.message === "No posts found")) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex flex-col items-center justify-center h-screen">
         <h1 className="text-2xl font-bold text-gray-500">
-          {error ? error.message : "Post not found"}
+          {data?.message === "Invalid post ID" ? "Error 400!" : "Error 404!"}
+        </h1>
+        <h1 className="text-2xl font-bold text-gray-500">
+          {data?.message === "Invalid post ID"
+            ? "Invalid post ID"
+            : "Post not found"}
         </h1>
       </div>
     );
@@ -156,7 +165,6 @@ export default function SinglePost({ id }) {
           )}
         </>
       )}
-
       <CommentModal updatePosts={updatePosts} type={undefined} />
     </div>
   );

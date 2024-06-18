@@ -1,0 +1,116 @@
+:root{
+  --autocomplete-input: #f7f7f7;
+  --autocomplete-panel: #f7f7f7;
+  --box-shadow: rgba(101, 119, 134, 0.2) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px;
+  --hover: #f7f7f7;
+  --text: #000;
+  --spinner: #333;
+}
+
+:root.dark {
+  --autocomplete-input: #000;
+  --autocomplete-panel: #000;
+  --hover: #555;
+  --text: #fff;
+  --spinner: #fff;
+}
+
+.p-autocomplete {
+  padding: 0px;
+  width: 100%;
+  position: absolute;
+  border: 1px solid gray;
+}
+
+.p-autocomplete-input{
+  border-radius: 999px;
+  width: 100%;
+  inset: 0px;
+  color: darkgray;
+  background-color: var(--autocomplete-input);
+  padding-left: 44px;
+  padding-right: 44px;
+  outline: none;
+}
+
+
+
+.p-autocomplete-input:focus{
+  border: 1px solid peachpuff;
+  --tw-ring-color: transparent;
+  outline: none;
+}
+
+.p-autocomplete-panel {
+  position: absolute;
+  z-index: 9999;
+  background-color: var(--autocomplete-panel);
+  box-shadow: var(--box-shadow) !important;
+  color: black;
+  left: auto;
+  box-shadow: rgba(255, 255, 255, 0.2) 0px 0px 15px, rgba(255, 255, 255, 0.15) 0px 0px 3px 1px;
+  border-radius: 8px;
+
+}
+
+.p-autocomplete-items-wrapper {
+  max-height: calc(-53px + 80vh) !important;
+  overflow-y: auto;
+}
+
+.p-autocomplete-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: auto;
+}
+
+.p-autocomplete-item {
+  cursor: pointer;
+  color: var(--text);
+  transition: background-color 0.3s ease;
+}
+
+.p-icon {
+  color: var(--spinner);
+  right: 10px;
+  top: 30%;
+  bottom: 0;
+}
+
+/* @media (prefers-color-scheme: dark) {
+  :root:not([color-scheme="light"]) {
+    --card: #000000;
+    --dark-hover: #333333;
+    --dark-border: #333333;
+    --dark-text: #f7f7f7;
+    --dark-placeholder: #b3b3b3;
+    --dark-icon: #fff;
+  }
+
+  .p-autocomplete-panel {
+    width: auto;
+    background-color: var(--card);
+    color: var(--dark-text);
+  }
+
+}
+
+
+html[data-theme="light"] {
+  :root{
+    --card: #000000;
+    --dark-hover: #333333;
+    --dark-border: #333333;
+    --dark-text: #f7f7f7;
+    --dark-placeholder: #b3b3b3;
+    --dark-icon: #fff;
+  }
+
+  .p-autocomplete-panel {
+    width: auto;
+    background-color: var(--card);
+    color: var(--dark-text);
+  }
+  color-scheme: light;
+} */

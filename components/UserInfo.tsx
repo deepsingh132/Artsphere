@@ -5,7 +5,7 @@ import SignInBtn from "./GoogleBtn";
 
 import { useSession } from "next-auth/react";
 export default function UserInfo() {
-  const { status, data: session } = useSession();
+  const { status } = useSession();
 
   const router = useRouter();
 

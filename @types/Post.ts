@@ -31,3 +31,13 @@ type Post = {
   createdAt?: string;
   updatedAt?: string;
 };
+
+type CommentType = {
+  userId: string;
+  content: string;
+  username: string;
+  timestamp: string;
+  userImg: string;
+  url: string;
+  name: string;
+};

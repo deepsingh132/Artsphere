@@ -1,8 +1,9 @@
-import { connectMongoDB } from "@/libs/mongodb";
-import Events from "@/models/Events";
+import { db } from "@/db";
+import { Attendees, events as Event } from "@/models/Events";
 import { NextResponse } from "next/server";
-import User from "@/models/User";
-import mongoose from "mongoose";
+import { users as User } from "@/models/User";
+import { eq, and, sql, Param } from "drizzle-orm";
+import { randomUUID } from "crypto";
 
 // Private route
 export async function POST(request: Request) {
@@ -10,28 +11,15 @@ export async function POST(request: Request) {
 
   const { userId, eventId, token } = body;
 
-  const accesstoken = request.headers.get("Authorization");
-  if (!token || !accesstoken) {
+  const userIdFromToken = request.headers.get("userId");
+  if (!token || !userId || !eventId || !userIdFromToken || userId !== userIdFromToken) {
     return NextResponse.json({ message: "Not Authorized!" }, { status: 401 });
   }
 
-  await connectMongoDB();
+  // check if the user and the event exists
+  const [user] = await db.select().from(User).where(eq(User._id, userId));
+  const [event] = await db.select().from(Event).where(eq(Event._id, eventId));
 
-  // check if the user exists
-  const user = await User.findById(userId);
-  // check if the user is already in the event using the event id and the user id
-  const isUserInEvent = await Events.findOne({
-    _id: eventId,
-    attendees: {
-      $elemMatch:
-      {
-        userId: new mongoose.Types.ObjectId(userId),
-      }
-    },
-  });
-
-  // check if the token is valid
-  const event = await Events.findById(eventId);
   if (!event || !user) {
     return NextResponse.json(
       { message: "Event or user not found" },
@@ -39,6 +27,17 @@ export async function POST(request: Request) {
     );
   }
 
+  let attendees = event.attendees as Attendees[];
+
+  if (!attendees) {
+    attendees = [];
+  }
+
+  const isUserInEvent = attendees.find(
+    (attendee) => attendee.userId === userId
+  ) as Attendees;
+
+  // check if the token is valid
   if (event?.token !== token) {
     return NextResponse.json({ message: "Invalid token" }, { status: 401 });
   }
@@ -48,7 +47,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         message: "User already in the event",
-        code: isUserInEvent.attendees[0]?.code,
+        code: isUserInEvent.code,
       },
       { status: 201 }
     );
@@ -56,14 +55,12 @@ export async function POST(request: Request) {
 
   try {
     // create a code for the user to join the event
-    const code = new mongoose.Types.ObjectId().toString();
-    const updatedEvent = await Events.findByIdAndUpdate(
-      eventId,
-      {
-        $push: { attendees: { userId: userId, code: code } },
-      },
-      { new: true }
-    );
+    const code = randomUUID();
+
+    // add the user to the event
+    const updatedEvent = await db.update(Event).set({
+      attendees: [...attendees, { userId: userId, code: code }],
+    }).where(eq(Event._id, eventId));
 
     if (updatedEvent) {
       return NextResponse.json(
