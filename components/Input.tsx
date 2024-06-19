@@ -263,6 +263,8 @@ export default function Input({
       userImg: session?.user?.image || "",
       content: sanitizedInput || "",
       category: "other",
+      likes: [],
+      comments: [],
       url: sanitizedUrl || "",
       name: session?.user?.name || "Test User",
       authorID: session?.user?.id,
