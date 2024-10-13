@@ -30,28 +30,23 @@ const getTrendingPosts = (posts: PostType[]) => {
 // Public route
 // Get the 10 most popular posts in the last 24 hours
 export async function GET(request: Request) {
+
+  if (!process.env.DATABASE_URL) {
+    return new NextResponse("Database connection not established.", { status: 500 });
+  }
+
+  try {
   // Calculate the timestamp for 24 hours ago
   const twentyFourHoursAgo = moment().subtract(24, "hours").toDate();
 
-  try {
     // Query posts created in the last 24 hours
     const posts = await db
       .select()
       .from(Post)
       .where(and(gte(Post.createdAt, twentyFourHoursAgo)))
-    // const posts = await Post.find({
-    //   createdAt: { $gte: twentyFourHoursAgo },
-    // });
 
     // if no posts or less than 3 posts, return the most recent 10 posts
     if (!posts || posts.length < 3) {
-      // const trendingPosts = await Post.find({
-      //   // where content is not empty and content length is not greater than 50
-      //   content: { $ne: "" },
-      //   $expr: { $lt: [{ $strLenCP: "$content" }, 50] },
-      // })
-      //   .sort({ createdAt: -1 })
-      //   .limit(10);
 
       const allPosts = await db.select()
         .from(Post)

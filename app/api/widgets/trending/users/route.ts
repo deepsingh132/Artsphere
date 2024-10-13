@@ -10,6 +10,11 @@ import moment from "moment";
 
 // Public route
 export async function GET(request: Request) {
+
+  if (!process.env.DATABASE_URL) {
+    return new NextResponse("Database connection not established.", { status: 500 });
+  }
+
   try {
     // Calculate the timestamp for 24 hours ago
     const twentyFourHoursAgo = moment().subtract(24, "hours").toDate();

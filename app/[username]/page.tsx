@@ -34,7 +34,7 @@ export default async function UserProfile({}) {
 
 async function getWidgetsData() {
 
-  if (!backendUrl) {
+  if (!backendUrl || backendUrl === "undefined") {
     return {
       trendingPosts: [],
       randomUsersResults: [],
