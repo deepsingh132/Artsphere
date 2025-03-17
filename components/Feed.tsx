@@ -115,7 +115,7 @@ export default function Feed({ type }) {
     return (
       <div
         data-testid="feed"
-        className="xl:ml-[350px] h-full border-l border-r border-lightBorderColor dark:border-darkBorderColor  xl:min-w-[680px] sm:ml-[82px] justify-center sm:w-[calc(100%-82px)] w-screen content-center items-center flex-grow max-w-2xl">
+        className="xl:ml-[350px] h-full border-l border-r border-lightBorderColor dark:border-darkBorderColor  xl:min-w-[680px] sm:ml-[82px] justify-center sm:w-[calc(100%-82px)] w-screen items-center flex-grow max-w-2xl">
         <Navbar title={undefined} />
         <Input
           updatePosts={updatePosts}
