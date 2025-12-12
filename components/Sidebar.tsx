@@ -34,7 +34,7 @@ export default function Sidebar({}) {
           alt="logo"
           height={50}
           className="rounded-full"
-          src="https://img.logoipsum.com/226.svg"
+          src="https://d2fy7spvltzu3v.cloudfront.net/99jxu%2Fpreview%2F73666629%2Fmain_large.png?response-content-disposition=inline%3Bfilename%3D%22main_large.png%22%3B&response-content-type=image%2Fpng&Expires=1765542491&Signature=dfinREWnoxg5zQJ48DUfrDP2xtZEDKGmo2Biruu7e4m-Vqculf0SQzGVmT-Kz8dQstWanPE4eMXurrm2UiDiW~XdAZZpjOI9irPtE7qC012ONs0BnT~Z1SlPQG2iXUsKQfUAKDsBTNaXgpQ1ojRIEXWHYC03Er3wi21UzoqLWTESSdpSIWOp1vcQrv9EBT8f6vUSpKrKMmvHBsOXVNB7qBRTSACMZcgRbeBX7fypEyyK~-RJWSf4X25CyHYzz9ljCWkMr~t9LmFpCdaWtetWCwSIRHZGLyEIAFYLH9Y3ciicp1am6kx5XFxM5pKMY6shg0kabDiVasanXHFcBkQtdw__&Key-Pair-Id=APKAJT5WQLLEOADKLHBQ"
         ></Image>
 
         <h1 className="hidden xl:flex dark:text-darkText self-center text-2xl font-extrabold ml-2">
