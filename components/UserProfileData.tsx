@@ -321,7 +321,7 @@ export default function UserProfileData({}) {
               alt="cover"
               loader={({ src }) => src}
               src={
-                "https://welc.ie/wp-content/uploads/2018/01/placeholder-1.png"
+                "https://web.archive.org/web/20210514084042if_/https://welc.ie/wp-content/uploads/2018/01/placeholder-1.png"
               }
               className=" w-full h-[276px] object-cover"
             />
